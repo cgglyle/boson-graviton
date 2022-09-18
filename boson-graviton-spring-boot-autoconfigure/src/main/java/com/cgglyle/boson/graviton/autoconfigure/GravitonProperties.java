@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.config;
+package com.cgglyle.boson.graviton.autoconfigure;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author lyle
- * @since 2022/09/10
+ * @since 2022/09/12
  */
-@Configuration
 @Data
 @ConfigurationProperties(prefix = "spring.boson.graviton")
-public class GravitonConfig {
+public class GravitonProperties {
+    /**
+     * 开启Graviton
+     */
+    private boolean enable;
     /**
      * 是否开启异步日志 默认为异步
      */
-    private boolean asynchronousLog = true;
+    private boolean enableAsync = true;
 
     /**
      * 默认成功日志模板
      */
     private String defaultSuccessTemplate = "[日志] [开始时间]=[{{startTime}}] " +
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
+            "[URL]=[{{url}}] [URI]=[{{uri}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [出参]=[{{outParameter}}] ";
     /**
      * 默认失败日志模板
      */
     private String defaultFailureTemplate = "[日志] [开始时间]=[{{startTime}}] " +
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
+            "[URL]=[{{url}}] [URI]=[{{uri}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [异常]=[{{exception}}] ";
 }
