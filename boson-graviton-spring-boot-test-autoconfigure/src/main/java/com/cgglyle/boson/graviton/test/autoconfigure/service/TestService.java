@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton;
+package com.cgglyle.boson.graviton.test.autoconfigure.service;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class BosonGravitonApplicationTests {
-
-    @Test
-    void contextLoads() {
-
-    }
-
+/**
+ * @author Lyle
+ * @since 2022/09/17
+ */
+public interface TestService {
+    String testString(String str);
 }

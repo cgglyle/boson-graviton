@@ -1,0 +1,5 @@
+debug: true
+spring:
+  boson:
+    graviton:
+      enable: true
