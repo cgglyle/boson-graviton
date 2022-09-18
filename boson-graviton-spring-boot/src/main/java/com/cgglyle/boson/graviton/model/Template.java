@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.exception;
+package com.cgglyle.boson.graviton.model;
+
+import lombok.Data;
 
 /**
- * 日志异常
+ * 日志模板
  *
- * @author lyle
- * @since 2022/09/11
+ * @author Lyle
+ * @since 2022/09/17
  */
-public class LogException extends RuntimeException {
-    public LogException() {
-    }
-
-    public LogException(String msg) {
-        super(msg);
-    }
-
-    public LogException(Throwable throwable) {
-        super(throwable);
-    }
+@Data
+public class Template {
+    /**
+     * 失败日志模板
+     */
+    private String failureTemplate;
+    /**
+     * 成功日志模板
+     */
+    private String successTemplate;
 }

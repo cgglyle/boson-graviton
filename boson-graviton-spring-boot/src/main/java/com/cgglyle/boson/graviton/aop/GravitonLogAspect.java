@@ -17,15 +17,16 @@
 package com.cgglyle.boson.graviton.aop;
 
 
+import com.cgglyle.boson.graviton.annotaion.GravitonAsync;
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
+import com.cgglyle.boson.graviton.api.LogControllerService;
+import com.cgglyle.boson.graviton.api.LogScheduler;
 import com.cgglyle.boson.graviton.model.LogInfo;
-import com.cgglyle.boson.graviton.service.LogControllerService;
-import com.cgglyle.boson.graviton.service.LogPrintfService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -36,15 +37,15 @@ import java.time.LocalDateTime;
  * @author lyle
  * @since 2022/08/13
  */
-@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class GravitonLogAspect {
     private final LogControllerService logControllerService;
-    private final LogPrintfService logPrintfService;
-    private final LogInfo logInfo;
+    private final LogScheduler logScheduler;
+    private LogInfo logInfo;
     private long serviceStartTime;
+    private boolean async;
 
     /**
      * 切入点
@@ -60,6 +61,8 @@ public class GravitonLogAspect {
      */
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
+        GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
+        async = gravitonLog.async();
         logControllerService.preprocessing(joinPoint, gravitonLog, logInfo);
     }
 
@@ -68,6 +71,7 @@ public class GravitonLogAspect {
      */
     @Around(value = "unityLogCut()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        logInfo = new LogInfo();
         logInfo.setStartTime(LocalDateTime.now());
         serviceStartTime = System.currentTimeMillis();
         return proceedingJoinPoint.proceed();
@@ -88,7 +92,7 @@ public class GravitonLogAspect {
     public void doAfter() {
         logInfo.setEndTime(LocalDateTime.now());
         logInfo.setConsumeTime(System.currentTimeMillis() - serviceStartTime);
-        logPrintfService.log(logInfo);
+        logScheduler.startPrintf(logInfo, async);
     }
 
     /**

@@ -16,21 +16,39 @@
 
 package com.cgglyle.boson.graviton.service;
 
+import com.cgglyle.boson.graviton.api.LogPrintfService;
 import com.cgglyle.boson.graviton.model.LogInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 
 /**
- * 日志打印服务
- * <p>
- * 接口提供自动打印服务
- *
  * @author lyle
  * @since 2022/09/10
  */
-public interface LogPrintfService {
+@Slf4j
+@RequiredArgsConstructor
+public class DefaultLogPrintfServiceImpl implements LogPrintfService {
+    private final TemplateInterpreter templateInterpreter;
+
     /**
      * 日志打印服务
      *
      * @param logInfo 日志信息
      */
-    void log(LogInfo logInfo);
+    @Override
+    public void log(LogInfo logInfo) {
+        log.info(templateInterpreter.interpreter(logInfo));
+    }
+
+    /**
+     * 异步日志打印服务
+     *
+     * @param logInfo 日志信息
+     */
+    @Async("gravitonLogPool")
+    @Override
+    public void asyncLog(LogInfo logInfo) {
+        log.info(templateInterpreter.interpreter(logInfo));
+    }
 }

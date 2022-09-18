@@ -16,13 +16,11 @@
 
 package com.cgglyle.boson.graviton.service;
 
-import com.cgglyle.boson.graviton.config.GravitonConfig;
 import com.cgglyle.boson.graviton.exception.LogException;
 import com.cgglyle.boson.graviton.model.LogInfo;
+import com.cgglyle.boson.graviton.model.Template;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -37,11 +35,26 @@ import java.util.regex.Pattern;
  * @author lyle
  * @since 2022/09/11
  */
-@Service
-@RequiredArgsConstructor
 public class TemplateInterpreter {
     private static final String TYPE = "(?<=\\{\\{).*?(?=}})";
-    private final GravitonConfig config;
+    /**
+     * 默认成功日志模板
+     */
+    private final String defaultSuccessTemplate;
+    /**
+     * 默认失败日志模板
+     */
+    private final String defaultFailureTemplate;
+
+    public TemplateInterpreter(String defaultSuccessTemplate, String defaultFailureTemplate){
+        this.defaultFailureTemplate = defaultFailureTemplate;
+        this.defaultSuccessTemplate = defaultSuccessTemplate;
+    }
+
+    public TemplateInterpreter(Template template){
+        this.defaultFailureTemplate = template.getFailureTemplate();
+        this.defaultSuccessTemplate = template.getSuccessTemplate();
+    }
 
     /**
      * 日志信息携带模板进入后会进行模板解释，将信息附着到模板上。
@@ -55,12 +68,12 @@ public class TemplateInterpreter {
         if (info.isStatus()) {
             template = info.getSuccessTemplate();
             if (!StringUtils.hasText(template)) {
-                template = config.getDefaultSuccessTemplate();
+                template = defaultSuccessTemplate;
             }
         } else {
             template = info.getFailureTemplate();
             if (!StringUtils.hasText(template)) {
-                template = config.getDefaultFailureTemplate();
+                template = defaultFailureTemplate;
             }
         }
         // 提取模板的标识

@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.annotaion;
+package com.cgglyle.boson.graviton.api;
 
-
-import java.lang.annotation.*;
+import java.util.Collection;
 
 /**
- * 日志介入注解
+ * 调度器配置接口
+ *
  * @author lyle
+ * @since 2022/09/14
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface GravitonLog {
+public interface ConfigurableLogScheduler {
     /**
-     * 模块
+     * 添加一个日志服务到调度器
+     *
+     * @param service 日志服务
      */
-    String module() default "";
+    void addPrintfService(LogPrintfService service);
 
     /**
-     * 解释
+     * 添加一个集合的日志服务到调度器
+     *
+     * @param servicesList 日志服务集合
      */
-    String explain() default "";
+    void addPrintfService(Collection<LogPrintfService> servicesList);
 
-    String successTemplate() default "";
-    String failureTemplate() default "";
+    /**
+     * 删除一个日志服务从调度器
+     *
+     * @param service 日志服务
+     */
+    void deletedPrintfService(LogPrintfService service);
 }

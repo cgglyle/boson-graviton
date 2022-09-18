@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.service;
+package com.cgglyle.boson.graviton.api;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.model.LogInfo;

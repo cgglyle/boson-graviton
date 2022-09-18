@@ -17,21 +17,25 @@
 package com.cgglyle.boson.graviton.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
+import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.model.LogInfo;
 import org.aspectj.lang.JoinPoint;
-import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * 默认提供的日志处理服务
+ * <p>
+ * 在是WEB项目的时候启用
  *
- * @author lyle
- * @since 2022/09/10
+ * @author Lyle
+ * @since 2022/09/16
  */
-@Service
-public class DefaultLogControllerServiceImpl implements LogControllerService{
+public class DefaultWebLogControllerServiceImpl implements LogControllerService {
     /**
      * 日志前置处理
      * <p>
@@ -39,10 +43,20 @@ public class DefaultLogControllerServiceImpl implements LogControllerService{
      *
      * @param joinPoint   织入点信息
      * @param gravitonLog 注解信息
-     * @param logInfo 日志信息
+     * @param logInfo     日志信息
      */
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+
+        if (requestAttributes != null) {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) requestAttributes.
+                    resolveReference(RequestAttributes.REFERENCE_REQUEST);
+            if (httpServletRequest != null) {
+                logInfo.setUri(httpServletRequest.getRequestURI());
+                logInfo.setUrl(httpServletRequest.getRequestURL().toString());
+            }
+        }
         logInfo.setSuccessTemplate(gravitonLog.successTemplate());
         logInfo.setFailureTemplate(gravitonLog.failureTemplate());
         logInfo.setClassName(joinPoint.getSignature().getDeclaringTypeName() + "." +
@@ -59,7 +73,7 @@ public class DefaultLogControllerServiceImpl implements LogControllerService{
      * <h3>注意！</h3>
      * {@code body}信息将被直接诶返回，不建议对body做任何的处理，建议只用于提取信息。
      *
-     * @param body        函数操作过后的出参
+     * @param body    函数操作过后的出参
      * @param logInfo 包含前置处理信息的日志信息
      */
     @Override
@@ -72,8 +86,8 @@ public class DefaultLogControllerServiceImpl implements LogControllerService{
      * <p>
      * 当被标记的函数发生异常，这个函数会被调用，不建议在此处做任何异常处理。请只提取信息。
      *
-     * @param throwable   异常信息
-     * @param logInfo 包含前置处理信息的日志信息
+     * @param throwable 异常信息
+     * @param logInfo   包含前置处理信息的日志信息
      */
     @Override
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {

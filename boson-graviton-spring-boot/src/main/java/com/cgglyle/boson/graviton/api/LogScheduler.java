@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.service;
+package com.cgglyle.boson.graviton.api;
 
 import com.cgglyle.boson.graviton.model.LogInfo;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
+ * Graviton 日志调度器
+ *
  * @author lyle
- * @since 2022/09/10
+ * @since 2022/09/12
  */
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class DefaultLogPrintfServiceImpl implements LogPrintfService{
-    private final TemplateInterpreter templateInterpreter;
+public interface LogScheduler {
+
     /**
-     * 日志打印服务
+     * 获得日志服务列表
      *
-     * @param logInfo 日志信息
+     * @return 日志服务列表
      */
-    @Async("gravitonLogThreadPool")
-    @Override
-    public void log(LogInfo logInfo) {
-        log.info(templateInterpreter.interpreter(logInfo));
-    }
+    List<LogPrintfService> printfServiceList();
+
+    /**
+     * 打印日志
+     *
+     * @param info 日志信息
+     * @param isAsync 是否异步操作
+     */
+    void startPrintf(LogInfo info, boolean isAsync);
+
 }
