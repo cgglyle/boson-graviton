@@ -23,11 +23,11 @@ import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.api.LogScheduler;
 import com.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -38,8 +38,8 @@ import java.time.LocalDateTime;
  * @since 2022/08/13
  */
 @Aspect
-@Component
 @RequiredArgsConstructor
+@Slf4j
 public class GravitonLogAspect {
     private final LogControllerService logControllerService;
     private final LogScheduler logScheduler;
@@ -62,7 +62,11 @@ public class GravitonLogAspect {
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
         GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
-        async = gravitonLog.async();
+        if (gravitonAsync != null) {
+            async = gravitonAsync.async();
+        } else {
+            async = gravitonLog.async();
+        }
         logControllerService.preprocessing(joinPoint, gravitonLog, logInfo);
     }
 

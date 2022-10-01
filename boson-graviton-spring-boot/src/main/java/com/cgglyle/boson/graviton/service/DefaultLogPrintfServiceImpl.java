@@ -20,13 +20,14 @@ import com.cgglyle.boson.graviton.api.LogPrintfService;
 import com.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * @author lyle
  * @since 2022/09/10
  */
 @Slf4j
+@EnableAsync
 @RequiredArgsConstructor
 public class DefaultLogPrintfServiceImpl implements LogPrintfService {
     private final TemplateInterpreter templateInterpreter;
@@ -38,7 +39,11 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
      */
     @Override
     public void log(LogInfo logInfo) {
-        log.info(templateInterpreter.interpreter(logInfo));
+        if (logInfo.isStatus()) {
+            log.info(templateInterpreter.interpreter(logInfo));
+        } else {
+            log.error(templateInterpreter.interpreter(logInfo));
+        }
     }
 
     /**
@@ -46,9 +51,13 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
      *
      * @param logInfo 日志信息
      */
-    @Async("gravitonLogPool")
     @Override
     public void asyncLog(LogInfo logInfo) {
-        log.info(templateInterpreter.interpreter(logInfo));
+        if (logInfo.isStatus()) {
+            log.info(templateInterpreter.interpreter(logInfo));
+        } else {
+            log.error(templateInterpreter.interpreter(logInfo));
+        }
+
     }
 }

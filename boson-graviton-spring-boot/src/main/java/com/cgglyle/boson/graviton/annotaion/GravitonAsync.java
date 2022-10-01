@@ -16,26 +16,31 @@
 
 package com.cgglyle.boson.graviton.annotaion;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
  * 全局是否开启异步
  * <p>
  * 次注解应该标注到类上，将异步设置此类所有的日志信息。
- * <p>但是方法上标注的异步信息优先级高于类上标注的
+ * <p>
+ * 此注解优先级高于{@link GravitonLog}注解中的异步开关。
  *
  * @author Lyle
  * @since 2022/09/16
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited
 @Documented
 public @interface GravitonAsync {
+    @AliasFor("async")
+    boolean value() default true;
 
     /**
      * 是否开启异步
      */
+    @AliasFor("value")
     boolean async() default true;
 
 }

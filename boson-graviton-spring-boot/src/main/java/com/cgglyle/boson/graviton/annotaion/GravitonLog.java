@@ -17,8 +17,6 @@
 package com.cgglyle.boson.graviton.annotaion;
 
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
@@ -30,7 +28,6 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@GravitonAsync
 @Documented
 public @interface GravitonLog {
     /**
@@ -60,6 +57,5 @@ public @interface GravitonLog {
     /**
      * 是否开启异步
      */
-    @AliasFor(annotation = GravitonAsync.class, attribute = "async")
     boolean async() default true;
 }

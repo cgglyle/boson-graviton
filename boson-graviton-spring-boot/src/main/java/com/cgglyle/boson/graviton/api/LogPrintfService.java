@@ -40,6 +40,6 @@ public interface LogPrintfService {
      *
      * @param logInfo 日志信息
      */
-    @Async
+    @Async("gravitonLogPool")
     void asyncLog(LogInfo logInfo);
 }
