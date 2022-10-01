@@ -22,4 +22,6 @@ package com.cgglyle.boson.graviton.test.autoconfigure.service;
  */
 public interface TestService {
     String testString(String str);
+
+    void testException();
 }

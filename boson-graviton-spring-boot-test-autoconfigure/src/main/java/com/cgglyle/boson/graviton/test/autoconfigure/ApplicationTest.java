@@ -16,12 +16,14 @@
 
 package com.cgglyle.boson.graviton.test.autoconfigure;
 
-import com.cgglyle.boson.graviton.annotaion.EnableGraviton;
+import com.cgglyle.boson.graviton.test.autoconfigure.service.TestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Lyle
@@ -31,10 +33,16 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @RequiredArgsConstructor
 @SpringBootApplication
-@EnableGraviton
 public class ApplicationTest {
+    private final TestService service;
+
     public static void main(String[] args) {
         SpringApplication.run(ApplicationTest.class, args);
         log.info("系统启动成功");
+    }
+
+    @PostConstruct
+    public String test() {
+        return service.testString("etsestset");
     }
 }

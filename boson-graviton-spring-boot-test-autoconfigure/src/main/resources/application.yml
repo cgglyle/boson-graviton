@@ -2,4 +2,4 @@ debug: true
 spring:
   boson:
     graviton:
-      enable: true
+      core-pool-size: 15

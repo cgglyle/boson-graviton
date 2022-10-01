@@ -16,7 +16,6 @@
 
 package com.cgglyle.boson.graviton.test.autoconfigure.service;
 
-import com.cgglyle.boson.graviton.annotaion.GravitonAsync;
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +23,18 @@ import org.springframework.stereotype.Service;
  * @author Lyle
  * @since 2022/09/17
  */
-@GravitonAsync(async = false)
 @Service
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog
-    public String testString(String str){
+    @GravitonLog(async = true)
+    public String testString(String str) {
         return str;
+    }
+
+    @Override
+    @GravitonLog(async = true)
+    public void testException() {
+        throw new RuntimeException("Exception");
     }
 }

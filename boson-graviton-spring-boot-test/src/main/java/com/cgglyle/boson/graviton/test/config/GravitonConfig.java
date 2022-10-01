@@ -16,11 +16,15 @@
 
 package com.cgglyle.boson.graviton.test.config;
 
+import com.cgglyle.boson.graviton.aop.GravitonLogAspect;
 import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.api.LogPrintfService;
 import com.cgglyle.boson.graviton.api.LogScheduler;
 import com.cgglyle.boson.graviton.model.Template;
-import com.cgglyle.boson.graviton.service.*;
+import com.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
+import com.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
+import com.cgglyle.boson.graviton.service.DefaultWebLogControllerServiceImpl;
+import com.cgglyle.boson.graviton.service.TemplateInterpreter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,6 +34,10 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class GravitonConfig {
+    @Bean
+    GravitonLogAspect gravitonLogAspect() {
+        return new GravitonLogAspect(logControllerService(), logScheduler());
+    }
 
     @Bean
     LogControllerService logControllerService() {
@@ -42,7 +50,7 @@ public class GravitonConfig {
     }
 
     @Bean
-    LogPrintfService logPrintfService(){
+    LogPrintfService logPrintfService() {
         return new DefaultLogPrintfServiceImpl(templateInterpreter());
     }
 

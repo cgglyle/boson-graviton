@@ -16,13 +16,14 @@
 
 package com.cgglyle.boson.graviton.test.autoconfigure.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Lyle
  * @since 2022/09/18
  */
+@RequiredArgsConstructor
 @Configuration
 public class Config {
-
 }

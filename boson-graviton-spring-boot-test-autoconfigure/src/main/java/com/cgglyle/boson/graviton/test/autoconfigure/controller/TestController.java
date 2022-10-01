@@ -18,10 +18,8 @@ package com.cgglyle.boson.graviton.test.autoconfigure.controller;
 
 import com.cgglyle.boson.graviton.test.autoconfigure.service.TestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Lyle
@@ -35,7 +33,13 @@ public class TestController {
     private final TestService service;
 
     @GetMapping("test/{str}")
-    public String test(@PathVariable String str){
+    public String test(@PathVariable String str) {
         return service.testString(str);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @GetMapping("test/Exception")
+    public void testException() {
+        service.testException();
     }
 }

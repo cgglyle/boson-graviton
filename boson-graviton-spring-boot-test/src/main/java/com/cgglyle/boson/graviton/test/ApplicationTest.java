@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
@@ -41,15 +40,14 @@ public class ApplicationTest {
     @Autowired
     private TestService service;
 
-    @Async
+    public static void main(String[] args) {
+        SpringApplication.run(ApplicationTest.class, args);
+        log.info("系统启动成功");
+    }
+
     @PostConstruct
     public void test() {
         String s = service.testString("test");
         log.info(s);
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(ApplicationTest.class, args);
-        log.info("系统启动成功");
     }
 }
