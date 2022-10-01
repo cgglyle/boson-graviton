@@ -16,68 +16,118 @@
 
 package com.cgglyle.boson.graviton.autoconfigure;
 
+import com.cgglyle.boson.graviton.aop.GravitonLogAspect;
 import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.api.LogPrintfService;
 import com.cgglyle.boson.graviton.api.LogScheduler;
 import com.cgglyle.boson.graviton.model.Template;
-import com.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
-import com.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
-import com.cgglyle.boson.graviton.service.DefaultWebLogControllerServiceImpl;
-import com.cgglyle.boson.graviton.service.TemplateInterpreter;
+import com.cgglyle.boson.graviton.service.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * 自动配置处理项
+ *
  * @author Lyle
  * @since 2022/09/18
  */
-@AutoConfiguration
+@EnableAsync
+@Configuration
+@AutoConfigureOrder(Integer.MIN_VALUE)
 @EnableConfigurationProperties(GravitonProperties.class)
 @RequiredArgsConstructor
-@ComponentScan(basePackages = "com.cgglyle.boson.graviton.aop")
-@ConditionalOnProperty(prefix = "spring.boson.graviton", name = "enable", havingValue = "true")
+@ComponentScan(basePackages = "com.cgglyle.boson.graviton.*")
 public class GravitonAutoconfigure {
     private final GravitonProperties properties;
 
-    @ConditionalOnMissingBean(LogControllerService.class)
-    @ConditionalOnWebApplication
+    @ConditionalOnMissingBean
     @Bean
-    LogControllerService webLogControllerService() {
-        return new DefaultWebLogControllerServiceImpl();
+    GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService, LogScheduler logScheduler) {
+        return new GravitonLogAspect(logControllerService, logScheduler);
     }
 
-    @ConditionalOnMissingBean(LogControllerService.class)
-    @ConditionalOnNotWebApplication
+    /**
+     * 日志调度器
+     */
+    @ConditionalOnMissingBean
     @Bean
-    LogControllerService LogControllerService() {
-        return new DefaultWebLogControllerServiceImpl();
+    LogScheduler logScheduler(LogPrintfService logPrintfService) {
+        return new DefaultLogSchedulerImpl(logPrintfService);
     }
 
-    @ConditionalOnMissingBean(LogScheduler.class)
+    /**
+     * 日志打印服务
+     */
+    @ConditionalOnMissingBean
     @Bean
-    LogScheduler logScheduler() {
-        return new DefaultLogSchedulerImpl(logPrintfService());
+    LogPrintfService logPrintfService(TemplateInterpreter templateInterpreter) {
+        return new DefaultLogPrintfServiceImpl(templateInterpreter);
     }
 
-    @ConditionalOnMissingBean(LogPrintfService.class)
-    @Bean
-    LogPrintfService logPrintfService(){
-        return new DefaultLogPrintfServiceImpl(templateInterpreter());
-    }
-
-    @ConditionalOnMissingBean(TemplateInterpreter.class)
+    /**
+     * 模板解析器
+     */
+    @ConditionalOnMissingBean
     @Bean
     TemplateInterpreter templateInterpreter() {
         Template template = new Template();
         template.setFailureTemplate(properties.getDefaultFailureTemplate());
         template.setSuccessTemplate(properties.getDefaultSuccessTemplate());
         return new TemplateInterpreter(template);
+    }
+
+    /**
+     * 如果不是web项目就注入
+     */
+    @ConditionalOnMissingBean
+    @ConditionalOnNotWebApplication
+    @Bean
+    LogControllerService logControllerService() {
+        return new DefaultLogControllerServiceImpl();
+    }
+
+    /**
+     * 如果是web项目就注入
+     */
+    @ConditionalOnMissingBean
+    @ConditionalOnWebApplication
+    @Bean
+    LogControllerService webLogControllerService() {
+        return new DefaultWebLogControllerServiceImpl();
+    }
+
+    /**
+     * 线程池
+     */
+    @ConditionalOnMissingBean(name = "gravitonLogPool")
+    @Bean(name = "gravitonLogPool")
+    public Executor asyncServiceExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        //配置核心线程数
+        executor.setCorePoolSize(properties.getCorePoolSize());
+        //配置最大线程数
+        executor.setMaxPoolSize(properties.getMaxPoolSize());
+        //配置队列大小
+        executor.setQueueCapacity(properties.getQueueCapacity());
+        //配置线程池中的线程的名称前缀
+        executor.setThreadNamePrefix(properties.getNamePrefix());
+        // rejection-policy：当pool已经达到max size的时候，如何处理新任务
+        // CALLER_RUNS：不在新线程中执行任务，而是有调用者所在的线程来执行
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        //执行初始化
+        executor.initialize();
+        return executor;
     }
 }

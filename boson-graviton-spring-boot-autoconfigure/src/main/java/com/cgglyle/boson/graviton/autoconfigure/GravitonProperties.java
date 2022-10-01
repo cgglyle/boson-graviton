@@ -26,14 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "spring.boson.graviton")
 public class GravitonProperties {
-    /**
-     * 开启Graviton
-     */
-    private boolean enable;
-    /**
-     * 是否开启异步日志 默认为异步
-     */
-    private boolean enableAsync = true;
 
     /**
      * 默认成功日志模板
@@ -49,4 +41,21 @@ public class GravitonProperties {
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
             "[URL]=[{{url}}] [URI]=[{{uri}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [异常]=[{{exception}}] ";
+
+    /**
+     * 核心线程数
+     */
+    private int corePoolSize = 10;
+    /**
+     * 最大线程数
+     */
+    private int maxPoolSize = 20;
+    /**
+     * 队列大小
+     */
+    private int queueCapacity = 1000;
+    /**
+     * 线程名前缀
+     */
+    private String namePrefix = "Graviton-Log ";
 }
