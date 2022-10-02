@@ -16,6 +16,7 @@
 
 package com.cgglyle.boson.graviton.test.controller;
 
+import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.test.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +35,9 @@ public class TestController {
 
     private final TestService service;
 
+    @GravitonLog
     @GetMapping("test/{str}")
-    public String test(@PathVariable String str){
-        return service.testString(str);
+    public String test(@PathVariable String str) {
+        return service.testString(str) + " controller test";
     }
 }

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog
+    @GravitonLog(timeFormat = "hh:mm:ss.SSS")
     public String testString(String str) {
         return str;
     }

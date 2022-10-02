@@ -65,6 +65,7 @@ public class GravitonConfig {
                 "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
                 "[URL]=[{{url}}] [URI]=[{{uri}}] " +
                 "[类名]=[{{className}}] [入参]=[{{inParameter}}] [出参]=[{{outParameter}}]");
+        template.setTimeFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return new TemplateInterpreter(template);
     }
 }
