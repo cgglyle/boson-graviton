@@ -34,4 +34,8 @@ public class Template {
      * 成功日志模板
      */
     private String successTemplate;
+    /**
+     * 时间格式
+     */
+    private String timeFormat;
 }

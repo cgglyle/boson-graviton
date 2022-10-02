@@ -64,4 +64,9 @@ public @interface GravitonLog {
      * 是否开启异步
      */
     boolean async() default true;
+
+    /**
+     * 日期格式
+     */
+    String timeFormat() default "";
 }

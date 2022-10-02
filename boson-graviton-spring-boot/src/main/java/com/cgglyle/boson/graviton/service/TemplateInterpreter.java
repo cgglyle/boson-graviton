@@ -24,6 +24,8 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,15 +47,21 @@ public class TemplateInterpreter {
      * 默认失败日志模板
      */
     private final String defaultFailureTemplate;
+    /**
+     * 时间格式
+     */
+    private final String timeFormat;
 
-    public TemplateInterpreter(String defaultSuccessTemplate, String defaultFailureTemplate){
+    public TemplateInterpreter(String defaultSuccessTemplate, String defaultFailureTemplate, String timeFormat) {
         this.defaultFailureTemplate = defaultFailureTemplate;
         this.defaultSuccessTemplate = defaultSuccessTemplate;
+        this.timeFormat = timeFormat;
     }
 
-    public TemplateInterpreter(Template template){
+    public TemplateInterpreter(Template template) {
         this.defaultFailureTemplate = template.getFailureTemplate();
         this.defaultSuccessTemplate = template.getSuccessTemplate();
+        this.timeFormat = template.getTimeFormat();
     }
 
     /**
@@ -96,11 +104,21 @@ public class TemplateInterpreter {
             try {
                 declaredField.setAccessible(true);
                 Object o = declaredField.get(info);
-                if (o == null){
+                if (o == null) {
                     tempStr = StringUtils.replace(tempStr, "{{" + temp.getTemplate() + "}}", "null");
-                } else {
-                    tempStr = StringUtils.replace(tempStr, "{{" + temp.getTemplate() + "}}", o.toString());
+                    continue;
                 }
+                if (o instanceof LocalDateTime) {
+                    String format;
+                    if (StringUtils.hasText(info.getTimeFormat())) {
+                        format = ((LocalDateTime) o).format(DateTimeFormatter.ofPattern(info.getTimeFormat()));
+                    } else {
+                        format = ((LocalDateTime) o).format(DateTimeFormatter.ofPattern(timeFormat));
+                    }
+                    tempStr = StringUtils.replace(tempStr, "{{" + temp.getTemplate() + "}}", format);
+                    continue;
+                }
+                tempStr = StringUtils.replace(tempStr, "{{" + temp.getTemplate() + "}}", o.toString());
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

@@ -38,10 +38,11 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      *
      * @param joinPoint   织入点信息
      * @param gravitonLog 注解信息
-     * @param logInfo 日志信息
+     * @param logInfo     日志信息
      */
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
+        logInfo.setTimeFormat(gravitonLog.timeFormat());
         logInfo.setSuccessTemplate(gravitonLog.successTemplate());
         logInfo.setFailureTemplate(gravitonLog.failureTemplate());
         logInfo.setClassName(joinPoint.getSignature().getDeclaringTypeName() + "." +
@@ -58,7 +59,7 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      * <h3>注意！</h3>
      * {@code body}信息将被直接诶返回，不建议对body做任何的处理，建议只用于提取信息。
      *
-     * @param body        函数操作过后的出参
+     * @param body    函数操作过后的出参
      * @param logInfo 包含前置处理信息的日志信息
      */
     @Override
@@ -71,8 +72,8 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      * <p>
      * 当被标记的函数发生异常，这个函数会被调用，不建议在此处做任何异常处理。请只提取信息。
      *
-     * @param throwable   异常信息
-     * @param logInfo 包含前置处理信息的日志信息
+     * @param throwable 异常信息
+     * @param logInfo   包含前置处理信息的日志信息
      */
     @Override
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {
