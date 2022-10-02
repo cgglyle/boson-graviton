@@ -33,11 +33,11 @@ public class DefaultLogSchedulerImpl extends AbstractLogScheduler {
     public DefaultLogSchedulerImpl() {
     }
 
-    public DefaultLogSchedulerImpl(Collection<LogPrintfService> servicesList){
+    public DefaultLogSchedulerImpl(Collection<LogPrintfService> servicesList) {
         LOG_PRINTF_SERVICE_LIST.addAll(servicesList);
     }
 
-    public DefaultLogSchedulerImpl(LogPrintfService service){
+    public DefaultLogSchedulerImpl(LogPrintfService service) {
         LOG_PRINTF_SERVICE_LIST.add(service);
     }
 
@@ -62,9 +62,9 @@ public class DefaultLogSchedulerImpl extends AbstractLogScheduler {
     }
 
     @Override
-    public void startPrintf(LogInfo info, boolean isAsync) {
+    public void startPrintf(LogInfo info) {
         for (LogPrintfService logPrintfService : LOG_PRINTF_SERVICE_LIST) {
-            if (isAsync) {
+            if (info.isAsync()) {
                 logPrintfService.asyncLog(info);
             } else {
                 logPrintfService.log(info);

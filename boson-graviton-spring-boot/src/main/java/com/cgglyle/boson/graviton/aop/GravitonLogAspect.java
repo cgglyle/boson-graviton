@@ -29,7 +29,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Stack;
 
 /**
  * 统一日志AOP
@@ -43,9 +45,7 @@ import java.time.LocalDateTime;
 public class GravitonLogAspect {
     private final LogControllerService logControllerService;
     private final LogScheduler logScheduler;
-    private LogInfo logInfo;
-    private long serviceStartTime;
-    private boolean async;
+    private final Stack<LogInfo> logInfoStack = new Stack<>();
 
     /**
      * 切入点
@@ -62,10 +62,11 @@ public class GravitonLogAspect {
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
         GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
+        LogInfo logInfo = logInfoStack.peek();
         if (gravitonAsync != null) {
-            async = gravitonAsync.async();
+            logInfo.setAsync(gravitonAsync.async());
         } else {
-            async = gravitonLog.async();
+            logInfo.setAsync(gravitonLog.async());
         }
         logControllerService.preprocessing(joinPoint, gravitonLog, logInfo);
     }
@@ -75,9 +76,9 @@ public class GravitonLogAspect {
      */
     @Around(value = "unityLogCut()")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        logInfo = new LogInfo();
+        logInfoStack.push(new LogInfo());
+        LogInfo logInfo = logInfoStack.peek();
         logInfo.setStartTime(LocalDateTime.now());
-        serviceStartTime = System.currentTimeMillis();
         return proceedingJoinPoint.proceed();
     }
 
@@ -86,6 +87,7 @@ public class GravitonLogAspect {
      */
     @AfterReturning(value = "unityLogCut()", returning = "body")
     public void doAfterReturning(Object body) {
+        LogInfo logInfo = logInfoStack.peek();
         logControllerService.postprocessing(body, logInfo);
     }
 
@@ -94,9 +96,10 @@ public class GravitonLogAspect {
      */
     @After(value = "unityLogCut()")
     public void doAfter() {
+        LogInfo logInfo = logInfoStack.pop();
         logInfo.setEndTime(LocalDateTime.now());
-        logInfo.setConsumeTime(System.currentTimeMillis() - serviceStartTime);
-        logScheduler.startPrintf(logInfo, async);
+        logInfo.setConsumeTime(Duration.between(logInfo.getStartTime(), logInfo.getEndTime()).toMillis());
+        logScheduler.startPrintf(logInfo);
     }
 
     /**
@@ -104,6 +107,7 @@ public class GravitonLogAspect {
      */
     @AfterThrowing(value = "unityLogCut()", throwing = "throwable")
     public void doAfterThrowing(Throwable throwable) {
+        LogInfo logInfo = logInfoStack.peek();
         logControllerService.exceptionProcessing(throwable, logInfo);
     }
 }

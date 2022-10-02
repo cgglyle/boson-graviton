@@ -39,8 +39,7 @@ public interface LogScheduler {
      * 打印日志
      *
      * @param info 日志信息
-     * @param isAsync 是否异步操作
      */
-    void startPrintf(LogInfo info, boolean isAsync);
+    void startPrintf(LogInfo info);
 
 }
