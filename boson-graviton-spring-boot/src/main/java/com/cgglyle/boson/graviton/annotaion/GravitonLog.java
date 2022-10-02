@@ -44,6 +44,9 @@ public @interface GravitonLog {
      * 成功模板
      * <p>
      * 不填写此项将默认使用内置的日志模板
+     * <p>
+     * 可以在{@link com.cgglyle.boson.graviton.model.LogInfo}中找到支持的标签。
+     * 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
      */
     String successTemplate() default "";
 
@@ -51,6 +54,9 @@ public @interface GravitonLog {
      * 失败模板
      * <p>
      * 不填写此项将默认使用内置的日志模板
+     * <p>
+     * 可以在{@link com.cgglyle.boson.graviton.model.LogInfo}中找到支持的标签。
+     * 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
      */
     String failureTemplate() default "";
 

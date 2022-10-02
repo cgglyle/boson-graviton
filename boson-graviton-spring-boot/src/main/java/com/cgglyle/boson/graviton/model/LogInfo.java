@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 
 /**
  * 日志信息
+ * <p>
+ * 所有成员都将用在日志模板中，并实现{@link com.cgglyle.boson.graviton.api.LogControllerService}来实现赋值
  *
  * @author lyle
  * @since 2022/09/10
