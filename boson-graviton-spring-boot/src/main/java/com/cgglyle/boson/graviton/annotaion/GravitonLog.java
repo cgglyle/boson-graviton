@@ -17,6 +17,10 @@
 package com.cgglyle.boson.graviton.annotaion;
 
 
+import com.cgglyle.boson.graviton.api.OrderNoGenerate;
+import com.cgglyle.boson.graviton.service.UUIDOrderNo;
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
@@ -69,4 +73,67 @@ public @interface GravitonLog {
      * 日期格式
      */
     String timeFormat() default "";
+
+    /**
+     * 业务日志
+     * <p>
+     * 支持SpEL
+     */
+    @AliasFor("value")
+    String content() default "";
+
+    /**
+     * 业务日志
+     * <p>
+     * 支持SpEL
+     */
+    @AliasFor("content")
+    String value() default "";
+
+    /**
+     * 是否开启系统日志
+     * <p>
+     * 默认开启
+     */
+    boolean enableSystem() default true;
+
+    /**
+     * 是否开启业务日志
+     * <p>
+     * 默认开启
+     */
+    boolean enableBusiness() default true;
+
+    /**
+     * 标识号
+     * <p>
+     * 同一次的调用将使用统一的标识号，方便后续检查日志。可以使用{@link GravitonLog#enableOrderNo()} 进行控制是否启用orderNo。
+     * <p>
+     * 默认情况下是关闭的，启用后可以选择使用雪花算法或者UUID进行填充或者是自定义填充（支持SpEL）。
+     * <p>
+     * 如果没有设置{@code orderNo}且开启了{@link GravitonLog#enableOrderNo()}，该情况下将会使用
+     * {@link GravitonLog#orderNoClass()}来实现{@code orderNo}。
+     *
+     * @see #orderNoClass()
+     * @see #enableOrderNo()
+     */
+    String orderNo() default "";
+
+    /**
+     * 标识号实现类选择
+     * <p>
+     * 如果没有设置{@link GravitonLog#orderNo()}且开启了{@link GravitonLog#enableOrderNo()}，该情况下将会使用
+     * {@code orderNoClass}来实现{@code orderNo}。
+     * <p>
+     * 默认实现为{@link UUIDOrderNo}
+     *
+     * @see #orderNo()
+     * @see #enableOrderNo()
+     */
+    Class<? extends OrderNoGenerate> orderNoClass() default UUIDOrderNo.class;
+
+    /**
+     * 是否启用orderNo，默认为关闭
+     */
+    boolean enableOrderNo() default false;
 }

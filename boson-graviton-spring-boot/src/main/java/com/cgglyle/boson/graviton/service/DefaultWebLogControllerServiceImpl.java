@@ -57,6 +57,8 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
                 logInfo.setUrl(httpServletRequest.getRequestURL().toString());
             }
         }
+        logInfo.setEnableSystem(gravitonLog.enableSystem());
+        logInfo.setEnableBusiness(gravitonLog.enableBusiness());
         logInfo.setTimeFormat(gravitonLog.timeFormat());
         logInfo.setSuccessTemplate(gravitonLog.successTemplate());
         logInfo.setFailureTemplate(gravitonLog.failureTemplate());

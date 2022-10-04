@@ -42,6 +42,8 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      */
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
+        logInfo.setEnableSystem(gravitonLog.enableSystem());
+        logInfo.setEnableBusiness(gravitonLog.enableBusiness());
         logInfo.setTimeFormat(gravitonLog.timeFormat());
         logInfo.setSuccessTemplate(gravitonLog.successTemplate());
         logInfo.setFailureTemplate(gravitonLog.failureTemplate());

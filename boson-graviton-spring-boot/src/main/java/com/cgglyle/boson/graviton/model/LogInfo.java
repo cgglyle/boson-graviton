@@ -45,5 +45,9 @@ public class LogInfo {
     private String failureTemplate;
     private boolean status;
     private boolean async;
+    private boolean enableSystem;
+    private boolean enableBusiness;
     private String timeFormat;
+    private String content;
+    private String orderNo;
 }

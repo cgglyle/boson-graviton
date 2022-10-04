@@ -123,6 +123,12 @@ public class TemplateInterpreter {
                 throw new RuntimeException(e);
             }
         }
+        if (StringUtils.hasText(info.getOrderNo())) {
+            if (StringUtils.hasText(info.getContent())) {
+                info.setContent(info.getOrderNo() + info.getContent());
+            }
+            return info.getOrderNo() + tempStr;
+        }
         return tempStr;
     }
 

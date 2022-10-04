@@ -21,6 +21,7 @@ import com.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.util.StringUtils;
 
 /**
  * @author lyle
@@ -53,11 +54,20 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
      */
     @Override
     public void asyncLog(LogInfo logInfo) {
-        if (logInfo.isStatus()) {
-            log.info(templateInterpreter.interpreter(logInfo));
-        } else {
-            log.error(templateInterpreter.interpreter(logInfo));
+        if (logInfo.isEnableSystem()) {
+            if (logInfo.isStatus()) {
+                log.info(templateInterpreter.interpreter(logInfo));
+            } else {
+                log.error(templateInterpreter.interpreter(logInfo));
+            }
         }
-
+        if (logInfo.isEnableBusiness()) {
+            if (logInfo.isStatus()) {
+                if (!StringUtils.hasText(logInfo.getContent())) {
+                    return;
+                }
+                log.info(logInfo.getContent());
+            }
+        }
     }
 }
