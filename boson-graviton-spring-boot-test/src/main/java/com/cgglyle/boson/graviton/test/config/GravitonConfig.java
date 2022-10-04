@@ -20,6 +20,7 @@ import com.cgglyle.boson.graviton.aop.GravitonLogAspect;
 import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.api.LogPrintfService;
 import com.cgglyle.boson.graviton.api.LogScheduler;
+import com.cgglyle.boson.graviton.api.LogSpELExpressionParser;
 import com.cgglyle.boson.graviton.model.Template;
 import com.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
 import com.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
@@ -35,8 +36,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GravitonConfig {
     @Bean
-    GravitonLogAspect gravitonLogAspect() {
-        return new GravitonLogAspect(logControllerService(), logScheduler());
+    GravitonLogAspect gravitonLogAspect(LogSpELExpressionParser logSpELExpressionParser) {
+        return new GravitonLogAspect(logControllerService(), logScheduler(), logSpELExpressionParser);
     }
 
     @Bean

@@ -16,6 +16,7 @@
 
 package com.cgglyle.boson.graviton.test.controller;
 
+import com.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.test.service.TestService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
+@EnableGravitonOrderNo
 public class TestController {
 
     private final TestService service;
