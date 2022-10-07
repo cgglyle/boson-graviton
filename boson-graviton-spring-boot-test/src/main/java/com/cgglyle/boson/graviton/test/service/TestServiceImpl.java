@@ -17,6 +17,7 @@
 package com.cgglyle.boson.graviton.test.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
+import com.cgglyle.boson.graviton.service.GravitonLogContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,8 +28,14 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog(content = "'测试 ' + #str")
+    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
     public String testString(String str) {
+        GravitonLogContext.putVariable("testContext", str + "OK!");
+        GravitonLogContext.putVariable("userName", str + "小王");
+        if (str.equals("sException")) {
+            throw new RuntimeException("graviton test service exception");
+        }
         return str;
     }
 }

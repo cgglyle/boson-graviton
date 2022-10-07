@@ -20,10 +20,7 @@ import com.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.test.service.TestService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Lyle
@@ -37,9 +34,14 @@ public class TestController {
 
     private final TestService service;
 
-    @GravitonLog
+    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
+    @ResponseBody
     @GetMapping("test/{str}")
     public String test(@PathVariable String str) {
+        if (str.equals("cException")) {
+            throw new RuntimeException("graviton test controller exception");
+        }
         return service.testString(str) + " controller test";
     }
 }

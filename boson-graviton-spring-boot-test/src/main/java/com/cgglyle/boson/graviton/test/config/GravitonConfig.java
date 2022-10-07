@@ -17,10 +17,7 @@
 package com.cgglyle.boson.graviton.test.config;
 
 import com.cgglyle.boson.graviton.aop.GravitonLogAspect;
-import com.cgglyle.boson.graviton.api.LogControllerService;
-import com.cgglyle.boson.graviton.api.LogPrintfService;
-import com.cgglyle.boson.graviton.api.LogScheduler;
-import com.cgglyle.boson.graviton.api.LogSpELExpressionParser;
+import com.cgglyle.boson.graviton.api.*;
 import com.cgglyle.boson.graviton.model.Template;
 import com.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
 import com.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
@@ -28,6 +25,7 @@ import com.cgglyle.boson.graviton.service.DefaultWebLogControllerServiceImpl;
 import com.cgglyle.boson.graviton.service.TemplateInterpreter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 
 /**
  * @author Lyle
@@ -36,23 +34,24 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GravitonConfig {
     @Bean
-    GravitonLogAspect gravitonLogAspect(LogSpELExpressionParser logSpELExpressionParser) {
-        return new GravitonLogAspect(logControllerService(), logScheduler(), logSpELExpressionParser);
+    GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService, LogScheduler logScheduler,
+                                        GravitonLogSpEL gravitonLogSpEL) {
+        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL);
     }
 
     @Bean
-    LogControllerService logControllerService() {
-        return new DefaultWebLogControllerServiceImpl();
+    LogControllerService logControllerService(@Nullable LogUserService logUserService) {
+        return new DefaultWebLogControllerServiceImpl(logUserService);
     }
 
     @Bean
-    LogScheduler logScheduler() {
-        return new DefaultLogSchedulerImpl(logPrintfService());
+    LogScheduler logScheduler(LogPrintfService logPrintfService) {
+        return new DefaultLogSchedulerImpl(logPrintfService);
     }
 
     @Bean
-    LogPrintfService logPrintfService() {
-        return new DefaultLogPrintfServiceImpl(templateInterpreter());
+    LogPrintfService logPrintfService(TemplateInterpreter templateInterpreter) {
+        return new DefaultLogPrintfServiceImpl(templateInterpreter);
     }
 
     @Bean
