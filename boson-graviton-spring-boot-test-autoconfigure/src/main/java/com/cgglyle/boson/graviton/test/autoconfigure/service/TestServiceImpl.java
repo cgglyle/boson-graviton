@@ -17,6 +17,7 @@
 package com.cgglyle.boson.graviton.test.autoconfigure.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
+import com.cgglyle.boson.graviton.service.GravitonLogContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,13 +28,18 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog(async = true)
+    @GravitonLog(successTemplate = "[test log] [start time]= {{startTime}}",
+            success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
     public String testString(String str) {
+        GravitonLogContext.putVariable("testContext", str + " OK!");
+        GravitonLogContext.putVariable("userName", str + " 小王");
         return str;
     }
 
     @Override
-    @GravitonLog(async = true)
+    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
     public void testException() {
         throw new RuntimeException("Exception");
     }
