@@ -124,8 +124,11 @@ public class TemplateInterpreter {
             }
         }
         if (StringUtils.hasText(info.getOrderNo())) {
-            if (StringUtils.hasText(info.getContent())) {
-                info.setContent(info.getOrderNo() + info.getContent());
+            if (StringUtils.hasText(info.getSuccess())) {
+                info.setSuccess(info.getOrderNo() + info.getSuccess());
+            }
+            if (StringUtils.hasText(info.getFailure())) {
+                info.setFailure(info.getOrderNo() + info.getFailure());
             }
             return info.getOrderNo() + tempStr;
         }

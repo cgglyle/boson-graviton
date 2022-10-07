@@ -80,15 +80,22 @@ public @interface GravitonLog {
      * 支持SpEL
      */
     @AliasFor("value")
-    String content() default "";
+    String success() default "";
 
     /**
      * 业务日志
      * <p>
      * 支持SpEL
      */
-    @AliasFor("content")
+    @AliasFor("success")
     String value() default "";
+
+    /**
+     * 业务失败日志
+     * <p>
+     * 支持SpEL
+     */
+    String failure() default "";
 
     /**
      * 是否开启系统日志
@@ -113,6 +120,8 @@ public @interface GravitonLog {
      * <p>
      * 如果没有设置{@code orderNo}且开启了{@link GravitonLog#enableOrderNo()}，该情况下将会使用
      * {@link GravitonLog#orderNoClass()}来实现{@code orderNo}。
+     * <p>
+     * TODO: 实现 对于转变前日志的调用
      *
      * @see #orderNoClass()
      * @see #enableOrderNo()

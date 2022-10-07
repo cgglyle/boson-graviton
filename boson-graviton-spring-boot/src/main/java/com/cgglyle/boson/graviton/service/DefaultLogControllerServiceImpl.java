@@ -18,7 +18,9 @@ package com.cgglyle.boson.graviton.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.api.LogControllerService;
+import com.cgglyle.boson.graviton.api.LogUserService;
 import com.cgglyle.boson.graviton.model.LogInfo;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 
 import java.util.Arrays;
@@ -30,7 +32,10 @@ import java.util.List;
  * @author lyle
  * @since 2022/09/10
  */
+@RequiredArgsConstructor
 public class DefaultLogControllerServiceImpl implements LogControllerService {
+    private final LogUserService logUserService;
+
     /**
      * 日志前置处理
      * <p>
@@ -42,6 +47,9 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      */
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
+        if (logUserService != null) {
+            logInfo.setUserName(logUserService.getUserName());
+        }
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());
         logInfo.setTimeFormat(gravitonLog.timeFormat());

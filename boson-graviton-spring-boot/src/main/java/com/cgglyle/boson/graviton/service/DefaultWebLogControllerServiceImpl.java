@@ -18,7 +18,9 @@ package com.cgglyle.boson.graviton.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.api.LogControllerService;
+import com.cgglyle.boson.graviton.api.LogUserService;
 import com.cgglyle.boson.graviton.model.LogInfo;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -35,7 +37,10 @@ import java.util.List;
  * @author Lyle
  * @since 2022/09/16
  */
+@RequiredArgsConstructor
 public class DefaultWebLogControllerServiceImpl implements LogControllerService {
+    private final LogUserService logUserService;
+
     /**
      * 日志前置处理
      * <p>
@@ -56,6 +61,9 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
                 logInfo.setUri(httpServletRequest.getRequestURI());
                 logInfo.setUrl(httpServletRequest.getRequestURL().toString());
             }
+        }
+        if (logUserService != null) {
+            logInfo.setUserName(logUserService.getUserName());
         }
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());

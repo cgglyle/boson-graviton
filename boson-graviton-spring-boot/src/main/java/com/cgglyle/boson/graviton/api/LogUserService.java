@@ -16,13 +16,14 @@
 
 package com.cgglyle.boson.graviton.api;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-
 /**
  * @author Lyle
- * @since 2022/10/02
+ * @since 2022/10/05
  */
-public interface LogSpELExpressionParser {
+public interface LogUserService {
 
-    String parser(String expression, ProceedingJoinPoint joinPoint);
+    /**
+     * 获取用户信息
+     */
+    String getUserName();
 }

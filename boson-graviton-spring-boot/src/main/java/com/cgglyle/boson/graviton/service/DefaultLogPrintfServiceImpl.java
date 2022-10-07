@@ -63,10 +63,15 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
         }
         if (logInfo.isEnableBusiness()) {
             if (logInfo.isStatus()) {
-                if (!StringUtils.hasText(logInfo.getContent())) {
+                if (!StringUtils.hasText(logInfo.getSuccess())) {
                     return;
                 }
-                log.info(logInfo.getContent());
+                log.info(logInfo.getSuccess());
+            } else {
+                if (!StringUtils.hasText(logInfo.getFailure())) {
+                    return;
+                }
+                log.warn(logInfo.getFailure());
             }
         }
     }

@@ -48,6 +48,8 @@ public class LogInfo {
     private boolean enableSystem;
     private boolean enableBusiness;
     private String timeFormat;
-    private String content;
+    private String success;
+    private String failure;
     private String orderNo;
+    private String userName;
 }
