@@ -39,7 +39,7 @@
 
     <scm>
         <connection>scm:git:github://github.com/cgglyle/boson-graviton.git</connection>
-        <developerConnection>scm:git:ssh://github.com:cgglyle/boson-graviton.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com:cgglyle/boson-graviton.git</developerConnection>
         <url>https://github.com/cgglyle/boson-graviton</url>
         <tag>boson-graviton-1.0.0</tag>
     </scm>
