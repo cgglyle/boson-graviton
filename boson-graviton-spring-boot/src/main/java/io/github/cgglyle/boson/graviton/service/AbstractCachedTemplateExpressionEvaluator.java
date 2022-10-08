@@ -50,6 +50,8 @@ public abstract class AbstractCachedTemplateExpressionEvaluator {
 
     /**
      * 使用指定的 {@link SpelExpressionParser} 创建一个新实例。
+     *
+     * @param parser spel 解析器
      */
     protected AbstractCachedTemplateExpressionEvaluator(SpelExpressionParser parser) {
         Assert.notNull(parser, "SpElExpressionParser must not be null");

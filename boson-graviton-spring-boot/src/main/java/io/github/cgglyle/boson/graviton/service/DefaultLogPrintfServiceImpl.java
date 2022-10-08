@@ -24,6 +24,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.util.StringUtils;
 
 /**
+ * 默认日志打印服务
+ *
  * @author lyle
  * @since 2022/09/10
  */

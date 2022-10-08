@@ -34,6 +34,8 @@ import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 /**
+ * 日志解析器
+ *
  * @author Lyle
  * @since 2022/10/05
  */

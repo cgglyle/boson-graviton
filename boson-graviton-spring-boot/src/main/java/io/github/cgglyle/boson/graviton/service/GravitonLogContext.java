@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
+ * 日志上下文静态方法
+ *
  * @author Lyle
  * @since 2022/10/07
  */

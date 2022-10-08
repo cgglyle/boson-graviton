@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 日志评估器
+ *
  * @author Lyle
  * @since 2022/10/05
  */
