@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
@@ -14,19 +13,19 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
     <groupId>io.gtihub.cgglyle</groupId>
     <artifactId>boson-graviton</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>boson-graviton</name>
     <description>A unified log processing module that can be quickly integrated.</description>
     <properties>
         <java.version>17</java.version>
-        <graviton.verison>1.0.0-SNAPSHOT</graviton.verison>
-        <graviton-test.verison>1.0.0-SNAPSHOT</graviton-test.verison>
-        <graviton-autoconfigure.verison>1.0.0-SNAPSHOT</graviton-autoconfigure.verison>
-        <graviton-starter.verison>1.0.0-SNAPSHOT</graviton-starter.verison>
+        <graviton.verison>1.0.0</graviton.verison>
+        <graviton-test.verison>1.0.0</graviton-test.verison>
+        <graviton-autoconfigure.verison>1.0.0</graviton-autoconfigure.verison>
+        <graviton-starter.verison>1.0.0</graviton-starter.verison>
         <mica-auto.verison>2.3.1</mica-auto.verison>
     </properties>
 
@@ -41,7 +40,8 @@
         <connection>scm:git:github://github.com/cgglyle/boson-graviton.git</connection>
         <developerConnection>scm:git:ssh://github.com:cgglyle/boson-graviton.git</developerConnection>
         <url>https://github.com/cgglyle/boson-graviton</url>
-    </scm>
+      <tag>boson-graviton-1.0.0</tag>
+  </scm>
 
     <developers>
         <developer>
