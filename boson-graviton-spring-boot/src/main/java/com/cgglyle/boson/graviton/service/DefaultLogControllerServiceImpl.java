@@ -18,7 +18,9 @@ package com.cgglyle.boson.graviton.service;
 
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.api.LogControllerService;
+import com.cgglyle.boson.graviton.api.LogUserService;
 import com.cgglyle.boson.graviton.model.LogInfo;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 
 import java.util.Arrays;
@@ -30,7 +32,10 @@ import java.util.List;
  * @author lyle
  * @since 2022/09/10
  */
+@RequiredArgsConstructor
 public class DefaultLogControllerServiceImpl implements LogControllerService {
+    private final LogUserService logUserService;
+
     /**
      * 日志前置处理
      * <p>
@@ -38,10 +43,16 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      *
      * @param joinPoint   织入点信息
      * @param gravitonLog 注解信息
-     * @param logInfo 日志信息
+     * @param logInfo     日志信息
      */
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
+        if (logUserService != null) {
+            logInfo.setUserName(logUserService.getUserName());
+        }
+        logInfo.setEnableSystem(gravitonLog.enableSystem());
+        logInfo.setEnableBusiness(gravitonLog.enableBusiness());
+        logInfo.setTimeFormat(gravitonLog.timeFormat());
         logInfo.setSuccessTemplate(gravitonLog.successTemplate());
         logInfo.setFailureTemplate(gravitonLog.failureTemplate());
         logInfo.setClassName(joinPoint.getSignature().getDeclaringTypeName() + "." +
@@ -58,7 +69,7 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      * <h3>注意！</h3>
      * {@code body}信息将被直接诶返回，不建议对body做任何的处理，建议只用于提取信息。
      *
-     * @param body        函数操作过后的出参
+     * @param body    函数操作过后的出参
      * @param logInfo 包含前置处理信息的日志信息
      */
     @Override
@@ -71,8 +82,8 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
      * <p>
      * 当被标记的函数发生异常，这个函数会被调用，不建议在此处做任何异常处理。请只提取信息。
      *
-     * @param throwable   异常信息
-     * @param logInfo 包含前置处理信息的日志信息
+     * @param throwable 异常信息
+     * @param logInfo   包含前置处理信息的日志信息
      */
     @Override
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {

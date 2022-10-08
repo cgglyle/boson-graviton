@@ -16,6 +16,7 @@
 
 package com.cgglyle.boson.graviton.test.autoconfigure.controller;
 
+import com.cgglyle.boson.graviton.annotaion.GravitonLog;
 import com.cgglyle.boson.graviton.test.autoconfigure.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,11 +33,15 @@ public class TestController {
 
     private final TestService service;
 
+    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
     @GetMapping("test/{str}")
     public String test(@PathVariable String str) {
         return service.testString(str);
     }
 
+    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @GetMapping("test/Exception")
     public void testException() {

@@ -41,7 +41,10 @@ public class GravitonProperties {
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
             "[URL]=[{{url}}] [URI]=[{{uri}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [异常]=[{{exception}}] ";
-
+    /**
+     * 默认日期格式
+     */
+    private String timeFormat = "yyyy-MM-dd HH:mm:ss.SSS";
     /**
      * 核心线程数
      */

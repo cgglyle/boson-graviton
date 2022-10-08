@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.api;
+package com.cgglyle.boson.graviton.annotaion;
 
-import com.cgglyle.boson.graviton.model.LogInfo;
-
-import java.util.List;
+import java.lang.annotation.*;
 
 /**
- * Graviton 日志调度器
+ * 用于控制是否启用orderNo
+ * <p>
+ * 在类上标识了次注解，此类下所有的{@link GravitonLog}标记的方法都将启用OrderNo
  *
- * @author lyle
- * @since 2022/09/12
+ * @author Lyle
+ * @since 2022/10/04
  */
-public interface LogScheduler {
-
-    /**
-     * 获得日志服务列表
-     *
-     * @return 日志服务列表
-     */
-    List<LogPrintfService> printfServiceList();
-
-    /**
-     * 打印日志
-     *
-     * @param info 日志信息
-     */
-    void startPrintf(LogInfo info);
-
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface EnableGravitonOrderNo {
 }

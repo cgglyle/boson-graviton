@@ -17,19 +17,29 @@
 package com.cgglyle.boson.graviton.aop;
 
 
+import com.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import com.cgglyle.boson.graviton.annotaion.GravitonAsync;
 import com.cgglyle.boson.graviton.annotaion.GravitonLog;
+import com.cgglyle.boson.graviton.api.GravitonLogSpEL;
 import com.cgglyle.boson.graviton.api.LogControllerService;
 import com.cgglyle.boson.graviton.api.LogScheduler;
+import com.cgglyle.boson.graviton.api.OrderNoGenerate;
 import com.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * 统一日志AOP
@@ -37,15 +47,19 @@ import java.time.LocalDateTime;
  * @author lyle
  * @since 2022/08/13
  */
+//@Aspect("pertarget(@annotation(com.cgglyle.boson.graviton.annotaion.GravitonLog))")
 @Aspect
 @RequiredArgsConstructor
+//@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Slf4j
 public class GravitonLogAspect {
     private final LogControllerService logControllerService;
     private final LogScheduler logScheduler;
-    private LogInfo logInfo;
-    private long serviceStartTime;
-    private boolean async;
+    private final Map<Long, Stack<LogInfo>> logInfoStackMap = new HashMap<>();
+    private final Map<Long, String> orderNoMap = new HashMap<>();
+    private final GravitonLogSpEL gravitonLogSpEl;
+    @Autowired
+    private ApplicationContext context;
 
     /**
      * 切入点
@@ -62,10 +76,12 @@ public class GravitonLogAspect {
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
         GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
+        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        LogInfo logInfo = logInfoStack.peek();
         if (gravitonAsync != null) {
-            async = gravitonAsync.async();
+            logInfo.setAsync(gravitonAsync.async());
         } else {
-            async = gravitonLog.async();
+            logInfo.setAsync(gravitonLog.async());
         }
         logControllerService.preprocessing(joinPoint, gravitonLog, logInfo);
     }
@@ -73,11 +89,32 @@ public class GravitonLogAspect {
     /**
      * 含参数验证环绕切入
      */
-    @Around(value = "unityLogCut()")
-    public Object doAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        logInfo = new LogInfo();
+    @Around(value = "unityLogCut()&&@annotation(gravitonLog)")
+    public Object doAround(ProceedingJoinPoint proceedingJoinPoint, GravitonLog gravitonLog) throws Throwable {
+        // 判断该线程是否在容器中有栈
+        long id = Thread.currentThread().getId();
+        if (!logInfoStackMap.containsKey(id)) {
+            Stack<LogInfo> logInfoStack = new Stack<>();
+            logInfoStackMap.put(id, logInfoStack);
+        }
+        Stack<LogInfo> logInfoStack = logInfoStackMap.get(id);
+        // 判断栈中是否有信息，没有信息代表是第一次进入，添加一个OrderNo
+        if (logInfoStack.size() == 0) {
+            EnableGravitonOrderNo annotation = AnnotationUtils.findAnnotation(proceedingJoinPoint.getSignature().getDeclaringType(), EnableGravitonOrderNo.class);
+            if (annotation != null | gravitonLog.enableOrderNo() && StringUtils.hasText(gravitonLog.orderNo())) {
+                orderNoMap.put(id, gravitonLogSpEl.parser(proceedingJoinPoint, gravitonLog.orderNo()
+                        , null, null, String.class));
+            } else if (annotation != null | gravitonLog.enableOrderNo()) {
+                OrderNoGenerate bean = context.getBean(gravitonLog.orderNoClass());
+                orderNoMap.put(id, bean.getOrderNo());
+            }
+        }
+        logInfoStack.push(new LogInfo());
+        LogInfo logInfo = logInfoStack.peek();
+        logInfo.setOrderNo(orderNoMap.get(id));
+        logInfo.setSuccess(gravitonLog.success());
+        logInfo.setFailure(gravitonLog.failure());
         logInfo.setStartTime(LocalDateTime.now());
-        serviceStartTime = System.currentTimeMillis();
         return proceedingJoinPoint.proceed();
     }
 
@@ -85,8 +122,28 @@ public class GravitonLogAspect {
      * 切入后信息处理
      */
     @AfterReturning(value = "unityLogCut()", returning = "body")
-    public void doAfterReturning(Object body) {
+    public void doAfterReturning(JoinPoint joinPoint, Object body) {
+        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        LogInfo logInfo = logInfoStack.peek();
         logControllerService.postprocessing(body, logInfo);
+        if (StringUtils.hasText(logInfo.getSuccess())) {
+            logInfo.setSuccess(gravitonLogSpEl.parser(joinPoint, logInfo.getSuccess(),
+                    body, null, String.class));
+        }
+    }
+
+    /**
+     * 异常后置
+     */
+    @AfterThrowing(value = "unityLogCut()&&@annotation(gravitonLog)", throwing = "throwable")
+    public void doAfterThrowing(JoinPoint joinPoint, Throwable throwable, GravitonLog gravitonLog) {
+        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        LogInfo logInfo = logInfoStack.peek();
+        logControllerService.exceptionProcessing(throwable, logInfo);
+        if (StringUtils.hasText(logInfo.getFailure())) {
+            logInfo.setFailure(gravitonLogSpEl.parser(joinPoint, gravitonLog.failure(),
+                    null, throwable.getMessage(), String.class));
+        }
     }
 
     /**
@@ -94,16 +151,16 @@ public class GravitonLogAspect {
      */
     @After(value = "unityLogCut()")
     public void doAfter() {
+        long id = Thread.currentThread().getId();
+        Stack<LogInfo> logInfoStack = logInfoStackMap.get(id);
+        LogInfo logInfo = logInfoStack.pop();
         logInfo.setEndTime(LocalDateTime.now());
-        logInfo.setConsumeTime(System.currentTimeMillis() - serviceStartTime);
-        logScheduler.startPrintf(logInfo, async);
-    }
-
-    /**
-     * 异常处理
-     */
-    @AfterThrowing(value = "unityLogCut()", throwing = "throwable")
-    public void doAfterThrowing(Throwable throwable) {
-        logControllerService.exceptionProcessing(throwable, logInfo);
+        logInfo.setConsumeTime(Duration.between(logInfo.getStartTime(), logInfo.getEndTime()).toMillis());
+        logScheduler.startPrintf(logInfo);
+        // 如果栈中为空，就移除相关线程的所有信息
+        if (logInfoStack.size() == 0) {
+            orderNoMap.remove(id);
+            logInfoStackMap.remove(id);
+        }
     }
 }

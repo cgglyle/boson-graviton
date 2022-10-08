@@ -17,9 +17,7 @@
 package com.cgglyle.boson.graviton.autoconfigure;
 
 import com.cgglyle.boson.graviton.aop.GravitonLogAspect;
-import com.cgglyle.boson.graviton.api.LogControllerService;
-import com.cgglyle.boson.graviton.api.LogPrintfService;
-import com.cgglyle.boson.graviton.api.LogScheduler;
+import com.cgglyle.boson.graviton.api.*;
 import com.cgglyle.boson.graviton.model.Template;
 import com.cgglyle.boson.graviton.service.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -54,8 +53,10 @@ public class GravitonAutoconfigure {
 
     @ConditionalOnMissingBean
     @Bean
-    GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService, LogScheduler logScheduler) {
-        return new GravitonLogAspect(logControllerService, logScheduler);
+    GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService,
+                                        LogScheduler logScheduler,
+                                        GravitonLogSpEL gravitonLogSpEL) {
+        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL);
     }
 
     /**
@@ -85,6 +86,7 @@ public class GravitonAutoconfigure {
         Template template = new Template();
         template.setFailureTemplate(properties.getDefaultFailureTemplate());
         template.setSuccessTemplate(properties.getDefaultSuccessTemplate());
+        template.setTimeFormat(properties.getTimeFormat());
         return new TemplateInterpreter(template);
     }
 
@@ -94,8 +96,8 @@ public class GravitonAutoconfigure {
     @ConditionalOnMissingBean
     @ConditionalOnNotWebApplication
     @Bean
-    LogControllerService logControllerService() {
-        return new DefaultLogControllerServiceImpl();
+    LogControllerService logControllerService(@Nullable LogUserService logUserService) {
+        return new DefaultLogControllerServiceImpl(logUserService);
     }
 
     /**
@@ -104,8 +106,8 @@ public class GravitonAutoconfigure {
     @ConditionalOnMissingBean
     @ConditionalOnWebApplication
     @Bean
-    LogControllerService webLogControllerService() {
-        return new DefaultWebLogControllerServiceImpl();
+    LogControllerService webLogControllerService(@Nullable LogUserService logUserService) {
+        return new DefaultWebLogControllerServiceImpl(logUserService);
     }
 
     /**

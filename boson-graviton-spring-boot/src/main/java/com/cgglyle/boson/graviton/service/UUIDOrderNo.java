@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package com.cgglyle.boson.graviton.api;
+package com.cgglyle.boson.graviton.service;
 
-import com.cgglyle.boson.graviton.model.LogInfo;
+import com.cgglyle.boson.graviton.api.OrderNoGenerate;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.UUID;
 
 /**
- * Graviton 日志调度器
+ * UUID Order No generate
  *
- * @author lyle
- * @since 2022/09/12
+ * @author Lyle
+ * @since 2022/10/04
  */
-public interface LogScheduler {
+@Service
+public class UUIDOrderNo implements OrderNoGenerate {
 
-    /**
-     * 获得日志服务列表
-     *
-     * @return 日志服务列表
-     */
-    List<LogPrintfService> printfServiceList();
-
-    /**
-     * 打印日志
-     *
-     * @param info 日志信息
-     */
-    void startPrintf(LogInfo info);
-
+    @Override
+    public String getOrderNo() {
+        return "[" + UUID.randomUUID() + "] ";
+    }
 }

@@ -16,30 +16,14 @@
 
 package com.cgglyle.boson.graviton.api;
 
-import com.cgglyle.boson.graviton.model.LogInfo;
-
-import java.util.List;
-
 /**
- * Graviton 日志调度器
- *
- * @author lyle
- * @since 2022/09/12
+ * @author Lyle
+ * @since 2022/10/05
  */
-public interface LogScheduler {
+public interface LogUserService {
 
     /**
-     * 获得日志服务列表
-     *
-     * @return 日志服务列表
+     * 获取用户信息
      */
-    List<LogPrintfService> printfServiceList();
-
-    /**
-     * 打印日志
-     *
-     * @param info 日志信息
-     */
-    void startPrintf(LogInfo info);
-
+    String getUserName();
 }
