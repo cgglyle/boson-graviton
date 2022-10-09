@@ -18,9 +18,11 @@ package io.github.cgglyle.boson.graviton.model;
 
 import io.github.cgglyle.boson.graviton.api.LogControllerService;
 import lombok.Data;
+import org.aspectj.lang.JoinPoint;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 日志信息
@@ -48,9 +50,15 @@ public class LogInfo {
     private boolean async;
     private boolean enableSystem;
     private boolean enableBusiness;
+    private boolean enableOrderNo;
     private String timeFormat;
     private String success;
     private String failure;
+    private Object systemLog;
+    private Object businessLog;
     private String orderNo;
     private String userName;
+    private JoinPoint joinPoint;
+    private String errorMsg;
+    private CompletableFuture<?> spELFuture;
 }

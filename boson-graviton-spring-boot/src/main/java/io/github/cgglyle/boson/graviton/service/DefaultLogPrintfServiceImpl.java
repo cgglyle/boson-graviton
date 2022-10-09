@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.util.StringUtils;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * 默认日志打印服务
  *
@@ -42,11 +44,7 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
      */
     @Override
     public void log(LogInfo logInfo) {
-        if (logInfo.isStatus()) {
-            log.info(templateInterpreter.interpreter(logInfo));
-        } else {
-            log.error(templateInterpreter.interpreter(logInfo));
-        }
+        printf(logInfo);
     }
 
     /**
@@ -56,24 +54,41 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
      */
     @Override
     public void asyncLog(LogInfo logInfo) {
+        printf(logInfo);
+    }
+
+    private void printf(LogInfo logInfo) {
         if (logInfo.isEnableSystem()) {
             if (logInfo.isStatus()) {
-                log.info(templateInterpreter.interpreter(logInfo));
+                if (logInfo.isEnableOrderNo()) {
+                    log.info(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
+                } else {
+                    log.info(templateInterpreter.interpreter(logInfo));
+                }
             } else {
-                log.error(templateInterpreter.interpreter(logInfo));
+                if (logInfo.isEnableOrderNo()) {
+                    log.error(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
+                } else {
+                    log.error(templateInterpreter.interpreter(logInfo));
+                }
             }
         }
-        if (logInfo.isEnableBusiness()) {
-            if (logInfo.isStatus()) {
-                if (!StringUtils.hasText(logInfo.getSuccess())) {
-                    return;
+        if (logInfo.isEnableBusiness() && logInfo.getBusinessLog() != null && StringUtils.hasText(logInfo.getBusinessLog().toString())) {
+            if (logInfo.getSpELFuture() != null) {
+                CompletableFuture.allOf(logInfo.getSpELFuture()).join();
+            }
+            if (logInfo.isStatus() && logInfo.getSuccess() != null && StringUtils.hasText(logInfo.getSuccess())) {
+                if (logInfo.isEnableOrderNo()) {
+                    log.info(logInfo.getOrderNo() + logInfo.getBusinessLog().toString());
+                } else {
+                    log.info(logInfo.getBusinessLog().toString());
                 }
-                log.info(logInfo.getSuccess());
-            } else {
-                if (!StringUtils.hasText(logInfo.getFailure())) {
-                    return;
+            } else if (!logInfo.isStatus() && logInfo.getFailure() != null && StringUtils.hasText(logInfo.getFailure())) {
+                if (logInfo.isEnableOrderNo()) {
+                    log.warn(logInfo.getOrderNo() + logInfo.getBusinessLog().toString());
+                } else {
+                    log.warn(logInfo.getBusinessLog().toString());
                 }
-                log.warn(logInfo.getFailure());
             }
         }
     }

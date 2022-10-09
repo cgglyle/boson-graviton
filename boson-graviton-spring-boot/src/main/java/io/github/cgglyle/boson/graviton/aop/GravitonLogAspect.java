@@ -100,8 +100,12 @@ public class GravitonLogAspect {
         if (logInfoStack.size() == 0) {
             EnableGravitonOrderNo annotation = AnnotationUtils.findAnnotation(proceedingJoinPoint.getSignature().getDeclaringType(), EnableGravitonOrderNo.class);
             if (annotation != null | gravitonLog.enableOrderNo() && StringUtils.hasText(gravitonLog.orderNo())) {
-                orderNoMap.put(id, gravitonLogSpEl.parser(proceedingJoinPoint, gravitonLog.orderNo()
-                        , null, null, String.class));
+                try {
+                    orderNoMap.put(id, gravitonLogSpEl.parser(proceedingJoinPoint, gravitonLog.orderNo()
+                            , null, null, String.class));
+                } catch (Exception e) {
+                    log.error("OrderNo SpEL Error " + e.getMessage(), e);
+                }
             } else if (annotation != null | gravitonLog.enableOrderNo()) {
                 OrderNoGenerate bean = context.getBean(gravitonLog.orderNoClass());
                 orderNoMap.put(id, bean.getOrderNo());
@@ -110,38 +114,28 @@ public class GravitonLogAspect {
         logInfoStack.push(new LogInfo());
         LogInfo logInfo = logInfoStack.peek();
         logInfo.setOrderNo(orderNoMap.get(id));
-        logInfo.setSuccess(gravitonLog.success());
-        logInfo.setFailure(gravitonLog.failure());
         logInfo.setStartTime(LocalDateTime.now());
         return proceedingJoinPoint.proceed();
     }
 
     /**
-     * 切入后信息处理
+     * 成功后信息处理
      */
     @AfterReturning(value = "unityLogCut()", returning = "body")
-    public void doAfterReturning(JoinPoint joinPoint, Object body) {
+    public void doAfterReturning(Object body) {
         Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
         LogInfo logInfo = logInfoStack.peek();
         logControllerService.postprocessing(body, logInfo);
-        if (StringUtils.hasText(logInfo.getSuccess())) {
-            logInfo.setSuccess(gravitonLogSpEl.parser(joinPoint, logInfo.getSuccess(),
-                    body, null, String.class));
-        }
     }
 
     /**
      * 异常后置
      */
-    @AfterThrowing(value = "unityLogCut()&&@annotation(gravitonLog)", throwing = "throwable")
-    public void doAfterThrowing(JoinPoint joinPoint, Throwable throwable, GravitonLog gravitonLog) {
+    @AfterThrowing(value = "unityLogCut()", throwing = "throwable")
+    public void doAfterThrowing(Throwable throwable) {
         Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
         LogInfo logInfo = logInfoStack.peek();
         logControllerService.exceptionProcessing(throwable, logInfo);
-        if (StringUtils.hasText(logInfo.getFailure())) {
-            logInfo.setFailure(gravitonLogSpEl.parser(joinPoint, gravitonLog.failure(),
-                    null, throwable.getMessage(), String.class));
-        }
     }
 
     /**
