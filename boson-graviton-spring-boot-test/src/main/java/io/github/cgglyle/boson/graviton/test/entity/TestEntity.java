@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.test.service;
+package io.github.cgglyle.boson.graviton.test.entity;
 
-import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * @author Lyle
- * @since 2022/09/17
+ * @since 2022/10/09
  */
-public interface TestService {
-    String testString(String str);
-
-    TestEntity testObj(TestEntity entity);
+@Data
+@ToString
+public class TestEntity {
+    private String username;
+    private String password;
 }

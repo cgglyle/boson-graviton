@@ -96,8 +96,8 @@ public class GravitonAutoconfigure {
     @ConditionalOnMissingBean
     @ConditionalOnNotWebApplication
     @Bean
-    LogControllerService logControllerService(@Nullable LogUserService logUserService) {
-        return new DefaultLogControllerServiceImpl(logUserService);
+    LogControllerService logControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
+        return new DefaultLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
     }
 
     /**
@@ -106,8 +106,8 @@ public class GravitonAutoconfigure {
     @ConditionalOnMissingBean
     @ConditionalOnWebApplication
     @Bean
-    LogControllerService webLogControllerService(@Nullable LogUserService logUserService) {
-        return new DefaultWebLogControllerServiceImpl(logUserService);
+    LogControllerService webLogControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
+        return new DefaultWebLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
     }
 
     /**
