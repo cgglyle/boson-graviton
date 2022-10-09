@@ -71,7 +71,7 @@ public class GravitonLogExpressionEvaluator extends AbstractCachedTemplateExpres
             logEvaluationContext.setBeanResolver(new BeanFactoryResolver(beanFactory));
         }
         if (logUserService != null) {
-            logEvaluationContext.setVariable("userName", logUserService.getUserName());
+            logEvaluationContext.setVariable("username", logUserService.getUserName());
         }
         return logEvaluationContext;
     }
