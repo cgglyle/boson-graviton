@@ -18,6 +18,8 @@ package io.github.cgglyle.boson.graviton.test.controller;
 
 import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
+import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
+import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
 import io.github.cgglyle.boson.graviton.test.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +36,31 @@ public class TestController {
 
     private final TestService service;
 
-    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
-            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
+    @GravitonLog(success = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
     @ResponseBody
     @GetMapping("test/{str}")
     public String test(@PathVariable String str) {
+        GravitonLogContext.createLogContext();
+        GravitonLogContext.putVariable("username", "testController 小王");
+        GravitonLogContext.putVariable("testContext", "testController OK!");
         if (str.equals("cException")) {
             throw new RuntimeException("graviton test controller exception");
         }
         return service.testString(str) + " controller test";
+    }
+
+    @GravitonLog(success = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
+            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+    @ResponseBody
+    @GetMapping("test/obj/{str}")
+    public TestEntity testObj(@PathVariable String str) {
+        GravitonLogContext.createLogContext();
+        GravitonLogContext.putVariable("username", "testObjController 小王");
+        GravitonLogContext.putVariable("testContext", "testObjController OK!");
+        TestEntity testEntity = new TestEntity();
+        testEntity.setUsername(str);
+        testEntity.setPassword("123456");
+        return service.testObj(testEntity);
     }
 }

@@ -16,18 +16,16 @@
 
 package io.github.cgglyle.boson.graviton.api;
 
-/**
- * 获取用户名称
- *
- * @author Lyle
- * @since 2022/10/05
- */
-public interface LogUserService {
+import io.github.cgglyle.boson.graviton.model.LogInfo;
+import org.springframework.scheduling.annotation.Async;
 
-    /**
-     * 获取用户信息
-     * <p>
-     * 注意，此方法会较晚执行，SpEL在方法中的username上下文存入可能会被覆盖。
-     */
-    String getUsername();
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * @author Lyle
+ * @since 2022/10/09
+ */
+public interface GravitonLogInfoSpEL {
+    @Async("gravitonLogPool")
+    CompletableFuture<?> parser(LogInfo loginfo, Class<?> parserResultClass);
 }

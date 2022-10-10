@@ -16,10 +16,14 @@
 
 package io.github.cgglyle.boson.graviton.test.service;
 
+import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
+
 /**
  * @author Lyle
  * @since 2022/09/17
  */
 public interface TestService {
     String testString(String str);
+
+    TestEntity testObj(TestEntity entity);
 }

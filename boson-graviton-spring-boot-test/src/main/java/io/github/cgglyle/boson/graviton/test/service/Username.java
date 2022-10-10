@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.api;
+package io.github.cgglyle.boson.graviton.test.service;
+
+import io.github.cgglyle.boson.graviton.api.LogUserService;
+import org.springframework.stereotype.Service;
 
 /**
- * 获取用户名称
- *
  * @author Lyle
- * @since 2022/10/05
+ * @since 2022/10/10
  */
-public interface LogUserService {
-
-    /**
-     * 获取用户信息
-     * <p>
-     * 注意，此方法会较晚执行，SpEL在方法中的username上下文存入可能会被覆盖。
-     */
-    String getUsername();
+@Service
+public class Username implements LogUserService {
+    @Override
+    public String getUsername() {
+        return "LogUserService 小张";
+    }
 }

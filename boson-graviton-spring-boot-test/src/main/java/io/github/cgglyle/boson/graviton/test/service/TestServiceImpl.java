@@ -16,8 +16,10 @@
 
 package io.github.cgglyle.boson.graviton.test.service;
 
+import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
 import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
+import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,17 +27,29 @@ import org.springframework.stereotype.Service;
  * @since 2022/09/17
  */
 @Service
+@EnableGravitonOrderNo
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog(success = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
-            failure = "操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
+    @GravitonLog(success = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            failure = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
     public String testString(String str) {
+        GravitonLogContext.createLogContext();
         GravitonLogContext.putVariable("testContext", str + "OK!");
-        GravitonLogContext.putVariable("userName", str + "小王");
+        GravitonLogContext.putVariable("username", "testStringService 小王");
         if (str.equals("sException")) {
             throw new RuntimeException("graviton test service exception");
         }
         return str;
+    }
+
+    @Override
+    @GravitonLog(success = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
+            failure = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+    public TestEntity testObj(TestEntity entity) {
+        GravitonLogContext.createLogContext();
+        GravitonLogContext.putVariable("testContext", "testObjService OK!");
+//        GravitonLogContext.putVariable("username", "testObjService 小王");
+        return entity;
     }
 }

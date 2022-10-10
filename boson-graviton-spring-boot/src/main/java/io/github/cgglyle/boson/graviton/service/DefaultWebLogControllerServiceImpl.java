@@ -16,12 +16,16 @@
 
 package io.github.cgglyle.boson.graviton.service;
 
+import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
+import io.github.cgglyle.boson.graviton.api.GravitonLogInfoSpEL;
 import io.github.cgglyle.boson.graviton.api.LogControllerService;
 import io.github.cgglyle.boson.graviton.api.LogUserService;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -40,6 +44,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefaultWebLogControllerServiceImpl implements LogControllerService {
     private final LogUserService logUserService;
+    private final GravitonLogInfoSpEL logInfoSpEL;
 
     /**
      * 日志前置处理
@@ -63,7 +68,7 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
             }
         }
         if (logUserService != null) {
-            logInfo.setUserName(logUserService.getUserName());
+            logInfo.setUsername(logUserService.getUsername());
         }
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());
@@ -74,7 +79,15 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
                 joinPoint.getSignature().getName());
         List<Object> objects = Arrays.asList(joinPoint.getArgs());
         logInfo.setInParameter(objects);
-        logInfo.setStatus(true);
+        logInfo.setSuccess(gravitonLog.success());
+        logInfo.setFailure(gravitonLog.failure());
+        logInfo.setJoinPoint(joinPoint);
+        EnableGravitonOrderNo annotation = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), EnableGravitonOrderNo.class);
+        if (annotation != null | gravitonLog.enableOrderNo()) {
+            logInfo.setEnableOrderNo(true);
+        } else {
+            logInfo.setBusinessLog(false);
+        }
     }
 
     /**
@@ -89,7 +102,12 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
      */
     @Override
     public void postprocessing(Object body, LogInfo logInfo) {
+        logInfo.setStatus(true);
         logInfo.setOutParameter(body);
+        if (StringUtils.hasText(logInfo.getSuccess())) {
+            GravitonLogContext.putVariable(logInfo);
+            logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        }
     }
 
     /**
@@ -103,6 +121,11 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
     @Override
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {
         logInfo.setException(throwable);
+        logInfo.setErrorMsg(throwable.getMessage());
         logInfo.setStatus(false);
+        if (StringUtils.hasText(logInfo.getFailure())) {
+            GravitonLogContext.putVariable(logInfo);
+            logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        }
     }
 }

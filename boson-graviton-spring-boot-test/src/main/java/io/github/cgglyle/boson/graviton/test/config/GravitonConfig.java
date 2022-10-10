@@ -40,8 +40,8 @@ public class GravitonConfig {
     }
 
     @Bean
-    LogControllerService logControllerService(@Nullable LogUserService logUserService) {
-        return new DefaultWebLogControllerServiceImpl(logUserService);
+    LogControllerService logControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
+        return new DefaultWebLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
     }
 
     @Bean
