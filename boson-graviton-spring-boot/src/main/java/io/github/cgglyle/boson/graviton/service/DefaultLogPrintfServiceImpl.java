@@ -73,7 +73,7 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
                 }
             }
         }
-        if (logInfo.isEnableBusiness() && logInfo.getBusinessLog() != null && StringUtils.hasText(logInfo.getBusinessLog().toString())) {
+        if (logInfo.isEnableBusiness() && (StringUtils.hasText(logInfo.getSuccess()) && logInfo.isStatus()) || (StringUtils.hasText(logInfo.getFailure()) && !logInfo.isStatus())) {
             if (logInfo.getSpELFuture() != null) {
                 CompletableFuture.allOf(logInfo.getSpELFuture()).join();
             }
