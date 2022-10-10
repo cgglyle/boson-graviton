@@ -18,8 +18,8 @@ package io.github.cgglyle.boson.graviton.annotaion;
 
 
 import io.github.cgglyle.boson.graviton.api.OrderNoGenerate;
-import io.github.cgglyle.boson.graviton.service.UUIDOrderNo;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.service.UUIDOrderNo;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -76,7 +76,10 @@ public @interface GravitonLog {
     /**
      * 业务日志
      * <p>
-     * 支持SpEL
+     * 支持SpEL, SpEl 使用 "#{}" 作为模板，请按照下方示例编写SpEL语句
+     * <p>
+     * {@code @GravitonLog(success = "Service 操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} #{#root.methodName},
+     * #{#result}")}
      */
     @AliasFor("value")
     String success() default "";
@@ -92,7 +95,9 @@ public @interface GravitonLog {
     /**
      * 业务失败日志
      * <p>
-     * 支持SpEL
+     * 支持SpEL, SpEl 使用 "#{}" 作为模板，请按照下方示例编写SpEL语句
+     * <p>
+     * {@code @GravitonLog(failure = "Service 操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
      */
     String failure() default "";
 

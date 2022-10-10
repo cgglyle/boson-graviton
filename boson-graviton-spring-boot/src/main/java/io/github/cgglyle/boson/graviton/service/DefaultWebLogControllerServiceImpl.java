@@ -25,6 +25,7 @@ import io.github.cgglyle.boson.graviton.model.LogInfo;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -103,7 +104,10 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
     public void postprocessing(Object body, LogInfo logInfo) {
         logInfo.setStatus(true);
         logInfo.setOutParameter(body);
-        logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        if (StringUtils.hasText(logInfo.getSuccess())) {
+            GravitonLogContext.putVariable(logInfo);
+            logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        }
     }
 
     /**
@@ -118,6 +122,9 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {
         logInfo.setException(throwable);
         logInfo.setStatus(false);
-        logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        if (StringUtils.hasText(logInfo.getFailure())) {
+            GravitonLogContext.putVariable(logInfo);
+            logInfo.setSpELFuture(logInfoSpEL.parser(logInfo, Object.class));
+        }
     }
 }

@@ -16,8 +16,10 @@
 
 package io.github.cgglyle.boson.graviton.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -28,14 +30,22 @@ import java.util.Stack;
  * @author Lyle
  * @since 2022/10/07
  */
+@Slf4j
 @Service
 public class GravitonLogContext {
     private static final Stack<Map<String, Object>> LOG_CONTEXT = new Stack<>();
+    private static final Map<String, Field[]> FIELD_CACHE = new HashMap<>();
     private static Long threadId;
 
     private GravitonLogContext() {
     }
 
+    /**
+     * 存入一条数据，会将变量存入GravitonSpEL上下文变量中
+     *
+     * @param key   变量名
+     * @param value 数据
+     */
     public static void putVariable(String key, Object value) {
         if (threadId == null) {
             threadId = Thread.currentThread().getId();
@@ -47,6 +57,34 @@ public class GravitonLogContext {
         }
         Map<String, Object> logMap = LOG_CONTEXT.peek();
         logMap.put(key, value);
+    }
+
+    /**
+     * 存入一个对象
+     * <p>
+     * 对象会根据成员名称被存入上下文中
+     *
+     * @param value 对象
+     */
+    public static void putVariable(Object value) {
+        Field[] fields;
+        if (FIELD_CACHE.containsKey(value.getClass().getName())) {
+            fields = FIELD_CACHE.get(value.getClass().getName());
+        } else {
+            fields = value.getClass().getDeclaredFields();
+            FIELD_CACHE.put(value.getClass().getName(), fields);
+        }
+        for (Field field : fields) {
+            String name = field.getName();
+            field.setAccessible(true);
+            try {
+                Object o = field.get(value);
+                GravitonLogContext.putVariable(name, o);
+            } catch (IllegalAccessException e) {
+                log.error("GravitonLogContext put variable error:" + e.getMessage(), e);
+            }
+
+        }
     }
 
     public static Map<String, Object> getLogMap() {
