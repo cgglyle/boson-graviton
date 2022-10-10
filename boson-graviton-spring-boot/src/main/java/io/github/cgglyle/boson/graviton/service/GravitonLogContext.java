@@ -98,6 +98,9 @@ public final class GravitonLogContext {
      * @param value 数据
      */
     public static void putVariable(String key, Object value) {
+        if (LOG_CONTEXT.isEmpty()) {
+            LOG_CONTEXT.push(new HashMap<>());
+        }
         Map<String, Object> logMap = LOG_CONTEXT.peek();
         logMap.put(key, value);
     }

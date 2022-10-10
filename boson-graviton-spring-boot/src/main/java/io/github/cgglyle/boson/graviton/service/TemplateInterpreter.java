@@ -99,7 +99,7 @@ public class TemplateInterpreter {
             try {
                 declaredField = aClass.getDeclaredField(temp.getTemplate());
             } catch (NoSuchFieldException e) {
-                throw new LogException(e);
+                throw new LogException(e + "模板中存在此成员，但是" + info.getClass().getName() + "类中不存在此成员");
             }
             try {
                 declaredField.setAccessible(true);
