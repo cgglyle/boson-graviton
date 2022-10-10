@@ -16,10 +16,8 @@
 
 package io.github.cgglyle.boson.graviton.service;
 
-import io.github.cgglyle.boson.graviton.api.LogUserService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.expression.AnnotatedElementKey;
@@ -27,7 +25,6 @@ import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -39,17 +36,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Lyle
  * @since 2022/10/05
  */
-@RequiredArgsConstructor
-@Service
 public class GravitonLogExpressionEvaluator extends AbstractCachedTemplateExpressionEvaluator {
     private final Map<ExpressionKey, Expression> messageCache = new ConcurrentHashMap<>(64);
     private final Map<ExpressionKey, Expression> conditionCache = new ConcurrentHashMap<>(64);
     private final Map<ExpressionKey, Expression> unlessCache = new ConcurrentHashMap<>(64);
 
     private final Map<AnnotatedElementKey, Method> targetMethodCache = new ConcurrentHashMap<>(64);
-
-    @Nullable
-    private final LogUserService logUserService;
 
     /**
      * 解析指定表达式。

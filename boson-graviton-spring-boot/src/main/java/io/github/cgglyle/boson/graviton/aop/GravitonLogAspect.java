@@ -37,8 +37,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -51,10 +49,10 @@ import java.util.Stack;
 @RequiredArgsConstructor
 @Slf4j
 public class GravitonLogAspect {
+    static final ThreadLocal<Stack<LogInfo>> THREAD_LOCAL_STACK_LOG_INFO = ThreadLocal.withInitial(Stack::new);
+    static final ThreadLocal<String> THREAD_LOCAL_ORDER_NO = new ThreadLocal<>();
     private final LogControllerService logControllerService;
     private final LogScheduler logScheduler;
-    private final Map<Long, Stack<LogInfo>> logInfoStackMap = new HashMap<>();
-    private final Map<Long, String> orderNoMap = new HashMap<>();
     private final GravitonLogSpEL gravitonLogSpEl;
     @Autowired
     private ApplicationContext context;
@@ -74,7 +72,7 @@ public class GravitonLogAspect {
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
         GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
-        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         LogInfo logInfo = logInfoStack.peek();
         if (gravitonAsync != null) {
             logInfo.setAsync(gravitonAsync.async());
@@ -91,29 +89,25 @@ public class GravitonLogAspect {
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint, GravitonLog gravitonLog) throws Throwable {
         // 判断该线程是否在容器中有栈
         long id = Thread.currentThread().getId();
-        if (!logInfoStackMap.containsKey(id)) {
-            Stack<LogInfo> logInfoStack = new Stack<>();
-            logInfoStackMap.put(id, logInfoStack);
-        }
-        Stack<LogInfo> logInfoStack = logInfoStackMap.get(id);
+        Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         // 判断栈中是否有信息，没有信息代表是第一次进入，添加一个OrderNo
         if (logInfoStack.size() == 0) {
             EnableGravitonOrderNo annotation = AnnotationUtils.findAnnotation(proceedingJoinPoint.getSignature().getDeclaringType(), EnableGravitonOrderNo.class);
             if (annotation != null | gravitonLog.enableOrderNo() && StringUtils.hasText(gravitonLog.orderNo())) {
                 try {
-                    orderNoMap.put(id, gravitonLogSpEl.parser(proceedingJoinPoint, gravitonLog.orderNo()
+                    THREAD_LOCAL_ORDER_NO.set(gravitonLogSpEl.parser(proceedingJoinPoint, gravitonLog.orderNo()
                             , null, null, String.class));
                 } catch (Exception e) {
                     log.error("OrderNo SpEL Error " + e.getMessage(), e);
                 }
             } else if (annotation != null | gravitonLog.enableOrderNo()) {
                 OrderNoGenerate bean = context.getBean(gravitonLog.orderNoClass());
-                orderNoMap.put(id, bean.getOrderNo());
+                THREAD_LOCAL_ORDER_NO.set(bean.getOrderNo());
             }
         }
         logInfoStack.push(new LogInfo());
         LogInfo logInfo = logInfoStack.peek();
-        logInfo.setOrderNo(orderNoMap.get(id));
+        logInfo.setOrderNo(THREAD_LOCAL_ORDER_NO.get());
         logInfo.setStartTime(LocalDateTime.now());
         return proceedingJoinPoint.proceed();
     }
@@ -123,7 +117,7 @@ public class GravitonLogAspect {
      */
     @AfterReturning(value = "unityLogCut()", returning = "body")
     public void doAfterReturning(Object body) {
-        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         LogInfo logInfo = logInfoStack.peek();
         logControllerService.postprocessing(body, logInfo);
     }
@@ -133,7 +127,7 @@ public class GravitonLogAspect {
      */
     @AfterThrowing(value = "unityLogCut()", throwing = "throwable")
     public void doAfterThrowing(Throwable throwable) {
-        Stack<LogInfo> logInfoStack = logInfoStackMap.get(Thread.currentThread().getId());
+        Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         LogInfo logInfo = logInfoStack.peek();
         logControllerService.exceptionProcessing(throwable, logInfo);
     }
@@ -143,16 +137,15 @@ public class GravitonLogAspect {
      */
     @After(value = "unityLogCut()")
     public void doAfter() {
-        long id = Thread.currentThread().getId();
-        Stack<LogInfo> logInfoStack = logInfoStackMap.get(id);
+        Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         LogInfo logInfo = logInfoStack.pop();
         logInfo.setEndTime(LocalDateTime.now());
         logInfo.setConsumeTime(Duration.between(logInfo.getStartTime(), logInfo.getEndTime()).toMillis());
         logScheduler.startPrintf(logInfo);
         // 如果栈中为空，就移除相关线程的所有信息
         if (logInfoStack.size() == 0) {
-            orderNoMap.remove(id);
-            logInfoStackMap.remove(id);
+            THREAD_LOCAL_ORDER_NO.remove();
+            THREAD_LOCAL_STACK_LOG_INFO.remove();
         }
     }
 }

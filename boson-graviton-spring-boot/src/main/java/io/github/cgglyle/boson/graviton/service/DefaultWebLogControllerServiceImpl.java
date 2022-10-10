@@ -68,7 +68,7 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
             }
         }
         if (logUserService != null) {
-            logInfo.setUserName(logUserService.getUserName());
+            logInfo.setUsername(logUserService.getUsername());
         }
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());
@@ -121,6 +121,7 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
     @Override
     public void exceptionProcessing(Throwable throwable, LogInfo logInfo) {
         logInfo.setException(throwable);
+        logInfo.setErrorMsg(throwable.getMessage());
         logInfo.setStatus(false);
         if (StringUtils.hasText(logInfo.getFailure())) {
             GravitonLogContext.putVariable(logInfo);

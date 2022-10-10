@@ -26,6 +26,8 @@ public interface LogUserService {
 
     /**
      * 获取用户信息
+     * <p>
+     * 注意，此方法会较晚执行，SpEL在方法中的username上下文存入可能会被覆盖。
      */
-    String getUserName();
+    String getUsername();
 }

@@ -52,7 +52,7 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
     @Override
     public void preprocessing(JoinPoint joinPoint, GravitonLog gravitonLog, LogInfo logInfo) {
         if (logUserService != null) {
-            logInfo.setUserName(logUserService.getUserName());
+            logInfo.setUsername(logUserService.getUsername());
         }
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());

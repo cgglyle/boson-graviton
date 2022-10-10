@@ -57,7 +57,7 @@ public class LogInfo {
     private Object systemLog;
     private Object businessLog;
     private String orderNo;
-    private String userName;
+    private String username;
     private JoinPoint joinPoint;
     private String errorMsg;
     private CompletableFuture<?> spELFuture;

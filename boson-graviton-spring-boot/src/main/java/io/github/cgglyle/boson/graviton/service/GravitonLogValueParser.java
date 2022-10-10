@@ -19,7 +19,6 @@ package io.github.cgglyle.boson.graviton.service;
 import io.github.cgglyle.boson.graviton.api.GravitonLogSpEL;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.BeansException;
@@ -29,7 +28,7 @@ import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.function.Supplier;
@@ -40,10 +39,9 @@ import java.util.function.Supplier;
  * @author Lyle
  * @since 2022/10/05
  */
-@Service
-@RequiredArgsConstructor
+@Component
 public class GravitonLogValueParser implements BeanFactoryAware, GravitonLogSpEL {
-    private final GravitonLogExpressionEvaluator logExpressionEvaluator;
+    private final GravitonLogExpressionEvaluator logExpressionEvaluator = new GravitonLogExpressionEvaluator();
     @Nullable
     private BeanFactory beanFactory;
 
