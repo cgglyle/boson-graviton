@@ -16,7 +16,7 @@
         <version>2.7.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.gtihub.cgglyle</groupId>
+    <groupId>io.github.cgglyle</groupId>
     <artifactId>boson-graviton</artifactId>
     <version>1.0.0</version>
     <name>boson-graviton</name>
@@ -24,9 +24,7 @@
     <properties>
         <java.version>17</java.version>
         <graviton.verison>1.0.0</graviton.verison>
-        <graviton-test.verison>1.0.0</graviton-test.verison>
-        <graviton-autoconfigure.verison>1.0.0</graviton-autoconfigure.verison>
-        <graviton-starter.verison>1.0.0</graviton-starter.verison>
+        <gpg.keyname>4FB8C600</gpg.keyname>
         <mica-auto.verison>2.3.1</mica-auto.verison>
     </properties>
 
@@ -41,7 +39,6 @@
         <connection>scm:git:github://github.com/cgglyle/boson-graviton.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:cgglyle/boson-graviton.git</developerConnection>
         <url>https://github.com/cgglyle/boson-graviton</url>
-        <tag>boson-graviton-1.0.0</tag>
     </scm>
 
     <developers>
@@ -52,27 +49,38 @@
         </developer>
     </developers>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>io.gtihub.cgglyle</groupId>
+                <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot</artifactId>
                 <version>${graviton.verison}</version>
             </dependency>
             <dependency>
-                <groupId>io.gtihub.cgglyle</groupId>
+                <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-test</artifactId>
-                <version>${graviton-test.verison}</version>
+                <version>${graviton.verison}</version>
             </dependency>
             <dependency>
-                <groupId>io.gtihub.cgglyle</groupId>
+                <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-autoconfigure</artifactId>
-                <version>${graviton-autoconfigure.verison}</version>
+                <version>${graviton.verison}</version>
             </dependency>
             <dependency>
-                <groupId>io.gtihub.cgglyle</groupId>
+                <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-starter</artifactId>
-                <version>${graviton-starter.verison}</version>
+                <version>${graviton.verison}</version>
             </dependency>
             <dependency>
                 <groupId>net.dreamlu</groupId>
@@ -119,6 +127,39 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <!-- 生成javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </plugin>
+
+                    <!-- 打包resources -->
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <version>3.2.1</version>
@@ -131,86 +172,41 @@
                             </execution>
                         </executions>
                     </plugin>
+
+                    <!-- 打包源码 -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.4.1</version>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
                         <configuration>
-                            <show>private</show>
-                            <nohelp>true</nohelp>
-                            <charset>UTF-8</charset>
-                            <encoding>UTF-8</encoding>
-                            <docencoding>UTF-8</docencoding>
-                            <additionalJOption>-Xdoclint:none</additionalJOption>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <showWarnings>true</showWarnings>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
+
+                    <!-- gpg认证 -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>1.6</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <keyname>${gpg.keyname}</keyname>
+                                    <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>3.0.0-M6</version>
-                        <configuration>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
-                            <useReleaseProfile>false</useReleaseProfile>
-                            <releaseProfiles>release</releaseProfiles>
-                            <goals>deploy nexus-staging:release</goals>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>2.5.3</version>
-                        <configuration>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
-                            <useReleaseProfile>false</useReleaseProfile>
-                            <releaseProfiles>release</releaseProfiles>
-                            <goals>deploy</goals>
-                        </configuration>
-                    </plugin>
+
+
                 </plugins>
             </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 </project>
