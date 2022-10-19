@@ -40,6 +40,7 @@ public class LogInfo {
     private Long consumeTime;
     private String url;
     private String uri;
+    private String ip;
     private String className;
     private Object inParameter;
     private Object outParameter;

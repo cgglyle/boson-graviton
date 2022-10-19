@@ -65,6 +65,7 @@ public class DefaultWebLogControllerServiceImpl implements LogControllerService 
             if (httpServletRequest != null) {
                 logInfo.setUri(httpServletRequest.getRequestURI());
                 logInfo.setUrl(httpServletRequest.getRequestURL().toString());
+                logInfo.setIp(httpServletRequest.getRemoteAddr());
             }
         }
         if (logUserService != null) {
