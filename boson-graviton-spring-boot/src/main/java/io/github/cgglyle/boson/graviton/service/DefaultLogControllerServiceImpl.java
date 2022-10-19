@@ -54,6 +54,10 @@ public class DefaultLogControllerServiceImpl implements LogControllerService {
         if (logUserService != null) {
             logInfo.setUsername(logUserService.getUsername());
         }
+        logInfo.setSystemSuccessLogLevel(gravitonLog.systemSuccessLogLevel());
+        logInfo.setSystemErrorLogLevel(gravitonLog.systemErrorLogLevel());
+        logInfo.setBusinessSuccessLogLevel(gravitonLog.businessSuccessLogLevel());
+        logInfo.setBusinessErrorLogLevel(gravitonLog.businessErrorLogLevel());
         logInfo.setEnableSystem(gravitonLog.enableSystem());
         logInfo.setEnableBusiness(gravitonLog.enableBusiness());
         logInfo.setTimeFormat(gravitonLog.timeFormat());

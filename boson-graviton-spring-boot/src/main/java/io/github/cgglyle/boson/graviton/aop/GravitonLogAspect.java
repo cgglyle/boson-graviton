@@ -32,7 +32,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
@@ -50,7 +49,7 @@ import java.util.Stack;
 @Aspect
 @RequiredArgsConstructor
 @Slf4j
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(-114514)
 public class GravitonLogAspect {
     static final ThreadLocal<Stack<LogInfo>> THREAD_LOCAL_STACK_LOG_INFO = ThreadLocal.withInitial(Stack::new);
     static final ThreadLocal<String> THREAD_LOCAL_ORDER_NO = new ThreadLocal<>();

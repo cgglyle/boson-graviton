@@ -18,6 +18,7 @@ package io.github.cgglyle.boson.graviton.service;
 
 import io.github.cgglyle.boson.graviton.api.LogPrintfService;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -58,46 +59,50 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
     }
 
     private void printf(LogInfo logInfo) {
+
         // 判断是否启用系统日志
         if (logInfo.isEnableSystem()) {
+            String info;
+            if (logInfo.isEnableOrderNo()) {
+                info = logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo);
+            } else {
+                info = templateInterpreter.interpreter(logInfo);
+            }
             // 判断执行状态，成功还是失败
             if (logInfo.isStatus()) {
-                // 判断是否启动订单号
-                if (logInfo.isEnableOrderNo()) {
-                    log.info(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
-                } else {
-                    log.info(templateInterpreter.interpreter(logInfo));
-                }
+                printf(logInfo.getSystemSuccessLogLevel(), info);
             } else {
-                // 判断是否启动订单号
-                if (logInfo.isEnableOrderNo()) {
-                    log.error(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
-                } else {
-                    log.error(templateInterpreter.interpreter(logInfo));
-                }
+                printf(logInfo.getSystemErrorLogLevel(), info);
             }
         }
         // 判断是否启动业务日志且成功模板和失败模板是否存在
         if (logInfo.isEnableBusiness() && (StringUtils.hasText(logInfo.getSuccess()) && logInfo.isStatus()) || (StringUtils.hasText(logInfo.getFailure()) && !logInfo.isStatus())) {
+            String info;
             // 判断异步调用是否为空
             if (logInfo.getSpELFuture() != null) {
                 // 等待调用结束
                 CompletableFuture.allOf(logInfo.getSpELFuture()).join();
             }
+            if (logInfo.isEnableOrderNo()) {
+                info = logInfo.getOrderNo() + logInfo.getBusinessLog().toString();
+            } else {
+                info = logInfo.getBusinessLog().toString();
+            }
             // 判断执行结果，并判断结果时候为空
             if (logInfo.isStatus() && logInfo.getSuccess() != null && StringUtils.hasText(logInfo.getSuccess())) {
-                if (logInfo.isEnableOrderNo()) {
-                    log.info(logInfo.getOrderNo() + logInfo.getBusinessLog().toString());
-                } else {
-                    log.info(logInfo.getBusinessLog().toString());
-                }
+                printf(logInfo.getBusinessSuccessLogLevel(), info);
             } else if (!logInfo.isStatus() && logInfo.getFailure() != null && StringUtils.hasText(logInfo.getFailure())) {
-                if (logInfo.isEnableOrderNo()) {
-                    log.warn(logInfo.getOrderNo() + logInfo.getBusinessLog().toString());
-                } else {
-                    log.warn(logInfo.getBusinessLog().toString());
-                }
+                printf(logInfo.getBusinessErrorLogLevel(), info);
             }
+        }
+    }
+
+    public void printf(LogLevelEnum logLevelEnum, String str) {
+        switch (logLevelEnum) {
+            case INFO -> log.info(str);
+            case WARN -> log.warn(str);
+            case ERROR -> log.error(str);
+            case DEBUG -> log.debug(str);
         }
     }
 }

@@ -52,6 +52,10 @@ public class LogInfo {
     private boolean enableSystem;
     private boolean enableBusiness;
     private boolean enableOrderNo;
+    private LogLevelEnum systemErrorLogLevel;
+    private LogLevelEnum systemSuccessLogLevel;
+    private LogLevelEnum businessErrorLogLevel;
+    private LogLevelEnum businessSuccessLogLevel;
     private String timeFormat;
     private String success;
     private String failure;
