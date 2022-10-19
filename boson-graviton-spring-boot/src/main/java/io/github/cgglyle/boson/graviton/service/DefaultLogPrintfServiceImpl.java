@@ -58,14 +58,18 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
     }
 
     private void printf(LogInfo logInfo) {
+        // 判断是否启用系统日志
         if (logInfo.isEnableSystem()) {
+            // 判断执行状态，成功还是失败
             if (logInfo.isStatus()) {
+                // 判断是否启动订单号
                 if (logInfo.isEnableOrderNo()) {
                     log.info(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
                 } else {
                     log.info(templateInterpreter.interpreter(logInfo));
                 }
             } else {
+                // 判断是否启动订单号
                 if (logInfo.isEnableOrderNo()) {
                     log.error(logInfo.getOrderNo() + templateInterpreter.interpreter(logInfo));
                 } else {
@@ -73,10 +77,14 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
                 }
             }
         }
+        // 判断是否启动业务日志且成功模板和失败模板是否存在
         if (logInfo.isEnableBusiness() && (StringUtils.hasText(logInfo.getSuccess()) && logInfo.isStatus()) || (StringUtils.hasText(logInfo.getFailure()) && !logInfo.isStatus())) {
+            // 判断异步调用是否为空
             if (logInfo.getSpELFuture() != null) {
+                // 等待调用结束
                 CompletableFuture.allOf(logInfo.getSpELFuture()).join();
             }
+            // 判断执行结果，并判断结果时候为空
             if (logInfo.isStatus() && logInfo.getSuccess() != null && StringUtils.hasText(logInfo.getSuccess())) {
                 if (logInfo.isEnableOrderNo()) {
                     log.info(logInfo.getOrderNo() + logInfo.getBusinessLog().toString());
