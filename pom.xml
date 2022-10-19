@@ -18,12 +18,12 @@
     </parent>
     <groupId>io.github.cgglyle</groupId>
     <artifactId>boson-graviton</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>boson-graviton</name>
     <description>A unified log processing module that can be quickly integrated.</description>
     <properties>
         <java.version>17</java.version>
-        <graviton.verison>1.0.1</graviton.verison>
+        <graviton.verison>1.0.2</graviton.verison>
         <gpg.keyname>4FB8C600</gpg.keyname>
         <mica-auto.verison>2.3.1</mica-auto.verison>
         <!-- 原始源码目录，我们后边要将源码目录切换到delombok.dir中 -->
