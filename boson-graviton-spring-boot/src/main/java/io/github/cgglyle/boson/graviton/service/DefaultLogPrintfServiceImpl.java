@@ -97,12 +97,22 @@ public class DefaultLogPrintfServiceImpl implements LogPrintfService {
         }
     }
 
-    public void printf(LogLevelEnum logLevelEnum, String str) {
-        switch (logLevelEnum) {
-            case INFO -> log.info(str);
-            case WARN -> log.warn(str);
-            case ERROR -> log.error(str);
-            case DEBUG -> log.debug(str);
+    private void printf(LogLevelEnum logLevelEnum, String str) {
+        if (logLevelEnum == LogLevelEnum.INFO) {
+            log.info(str);
+            return;
+        }
+        if (logLevelEnum == LogLevelEnum.WARN) {
+            log.warn(str);
+            return;
+        }
+        if (logLevelEnum == LogLevelEnum.ERROR) {
+            log.error(str);
+            return;
+        }
+        if (logLevelEnum == LogLevelEnum.DEBUG) {
+            log.debug(str);
+            return;
         }
     }
 }
