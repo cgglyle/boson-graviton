@@ -18,15 +18,25 @@
     </parent>
     <groupId>io.github.cgglyle</groupId>
     <artifactId>boson-graviton</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <name>boson-graviton</name>
     <description>A unified log processing module that can be quickly integrated.</description>
     <properties>
         <java.version>17</java.version>
-        <graviton.verison>1.0.0</graviton.verison>
+        <graviton.verison>1.0.2</graviton.verison>
         <gpg.keyname>4FB8C600</gpg.keyname>
         <mica-auto.verison>2.3.1</mica-auto.verison>
+        <!-- 原始源码目录，我们后边要将源码目录切换到delombok.dir中 -->
+        <origin.source.dir>src/main/java</origin.source.dir>
+        <!-- 打包生成source时使用的目录 -->
+        <source.generate.dir>src/main/java</source.generate.dir>
+        <!-- lombok生成源码的目录 -->
+        <delombok.dir>${project.build.directory}/delombok</delombok.dir>
     </properties>
+
+    <build>
+        <sourceDirectory>${source.generate.dir}</sourceDirectory>
+    </build>
 
     <licenses>
         <license>
@@ -69,11 +79,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
-                <artifactId>boson-graviton-spring-boot-test</artifactId>
-                <version>${graviton.verison}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-autoconfigure</artifactId>
                 <version>${graviton.verison}</version>
             </dependency>
@@ -81,6 +86,18 @@
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-starter</artifactId>
                 <version>${graviton.verison}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.cgglyle</groupId>
+                <artifactId>boson-graviton-spring-boot-test-autoconfigure</artifactId>
+                <version>${graviton.verison}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.github.cgglyle</groupId>
+                <artifactId>boson-graviton-spring-boot-test</artifactId>
+                <version>${graviton.verison}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>net.dreamlu</groupId>
@@ -124,8 +141,29 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <source.generate.dir>${delombok.dir}</source.generate.dir>
+            </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok-maven-plugin</artifactId>
+                        <version>1.18.20.0</version>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <sourceDirectory>${origin.source.dir}</sourceDirectory>
+                            <outputDirectory>${delombok.dir}</outputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>delombok</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -137,8 +175,6 @@
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-
-                    <!-- 生成javadoc -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -157,8 +193,6 @@
                             <failOnError>false</failOnError>
                         </configuration>
                     </plugin>
-
-                    <!-- 打包resources -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -172,8 +206,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
-                    <!-- 打包源码 -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
@@ -184,8 +216,6 @@
                             <showWarnings>true</showWarnings>
                         </configuration>
                     </plugin>
-
-                    <!-- gpg认证 -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -203,8 +233,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
-
                 </plugins>
             </build>
         </profile>

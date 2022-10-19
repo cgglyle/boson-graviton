@@ -32,14 +32,14 @@ public class GravitonProperties {
      */
     private String defaultSuccessTemplate = "[日志] [开始时间]=[{{startTime}}] " +
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
-            "[URL]=[{{url}}] [URI]=[{{uri}}] " +
+            "[URL]=[{{url}}] [URI]=[{{uri}}] [IP]=[{{ip}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [出参]=[{{outParameter}}] ";
     /**
      * 默认失败日志模板
      */
     private String defaultFailureTemplate = "[日志] [开始时间]=[{{startTime}}] " +
             "[结束时间]=[{{endTime}}] [耗时]=[{{consumeTime}}ms] " +
-            "[URL]=[{{url}}] [URI]=[{{uri}}] " +
+            "[URL]=[{{url}}] [URI]=[{{uri}}] [IP]=[{{ip}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [异常]=[{{exception}}] ";
     /**
      * 默认日期格式

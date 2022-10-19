@@ -18,6 +18,7 @@ package io.github.cgglyle.boson.graviton.test.controller;
 
 import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
+import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
 import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
 import io.github.cgglyle.boson.graviton.test.service.TestService;
@@ -37,7 +38,8 @@ public class TestController {
     private final TestService service;
 
     @GravitonLog(success = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
-            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}",
+            systemSuccessLogLevel = LogLevelEnum.WARN)
     @ResponseBody
     @GetMapping("test/{str}")
     public String test(@PathVariable String str) {

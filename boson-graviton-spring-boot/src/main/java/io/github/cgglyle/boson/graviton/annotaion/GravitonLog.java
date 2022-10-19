@@ -19,6 +19,7 @@ package io.github.cgglyle.boson.graviton.annotaion;
 
 import io.github.cgglyle.boson.graviton.api.OrderNoGenerate;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import io.github.cgglyle.boson.graviton.service.UUIDOrderNo;
 import org.springframework.core.annotation.AliasFor;
 
@@ -149,4 +150,24 @@ public @interface GravitonLog {
      * 是否启用orderNo，默认为关闭
      */
     boolean enableOrderNo() default false;
+
+    /**
+     * 系统日志失败打印级别
+     */
+    LogLevelEnum systemErrorLogLevel() default LogLevelEnum.ERROR;
+
+    /**
+     * 系统日志成功打印级别
+     */
+    LogLevelEnum systemSuccessLogLevel() default LogLevelEnum.INFO;
+
+    /**
+     * 业务日志失败打印级别
+     */
+    LogLevelEnum businessErrorLogLevel() default LogLevelEnum.WARN;
+
+    /**
+     * 业务日志成功打印级别
+     */
+    LogLevelEnum businessSuccessLogLevel() default LogLevelEnum.INFO;
 }
