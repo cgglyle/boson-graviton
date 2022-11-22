@@ -23,6 +23,7 @@ import io.github.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
 import io.github.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
 import io.github.cgglyle.boson.graviton.service.DefaultWebLogControllerServiceImpl;
 import io.github.cgglyle.boson.graviton.service.TemplateInterpreter;
+import io.github.cgglyle.boson.graviton.service.mq.LogPrintfConsume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
@@ -35,8 +36,8 @@ import org.springframework.lang.Nullable;
 public class GravitonConfig {
     @Bean
     GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService, LogScheduler logScheduler,
-                                        GravitonLogSpEL gravitonLogSpEL) {
-        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL);
+                                        GravitonLogSpEL gravitonLogSpEL, TemplateInterpreter templateInterpreter) {
+        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL, new LogPrintfConsume(templateInterpreter));
     }
 
     @Bean

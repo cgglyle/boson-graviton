@@ -23,15 +23,16 @@
     <description>A unified log processing module that can be quickly integrated.</description>
     <properties>
         <java.version>17</java.version>
-        <graviton.verison>1.0.2</graviton.verison>
+        <graviton.version>1.0.2</graviton.version>
         <gpg.keyname>4FB8C600</gpg.keyname>
-        <mica-auto.verison>2.3.1</mica-auto.verison>
+        <mica-auto.version>2.3.1</mica-auto.version>
         <!-- 原始源码目录，我们后边要将源码目录切换到delombok.dir中 -->
         <origin.source.dir>src/main/java</origin.source.dir>
         <!-- 打包生成source时使用的目录 -->
         <source.generate.dir>src/main/java</source.generate.dir>
         <!-- lombok生成源码的目录 -->
         <delombok.dir>${project.build.directory}/delombok</delombok.dir>
+        <disruptor.version>3.4.4</disruptor.version>
     </properties>
 
     <build>
@@ -75,35 +76,40 @@
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot</artifactId>
-                <version>${graviton.verison}</version>
+                <version>${graviton.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-autoconfigure</artifactId>
-                <version>${graviton.verison}</version>
+                <version>${graviton.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-starter</artifactId>
-                <version>${graviton.verison}</version>
+                <version>${graviton.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-test-autoconfigure</artifactId>
-                <version>${graviton.verison}</version>
+                <version>${graviton.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.github.cgglyle</groupId>
                 <artifactId>boson-graviton-spring-boot-test</artifactId>
-                <version>${graviton.verison}</version>
+                <version>${graviton.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>net.dreamlu</groupId>
                 <artifactId>mica-auto</artifactId>
-                <version>${mica-auto.verison}</version>
+                <version>${mica-auto.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptor.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

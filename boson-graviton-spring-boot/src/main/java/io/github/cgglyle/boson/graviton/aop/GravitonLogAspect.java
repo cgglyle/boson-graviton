@@ -25,7 +25,11 @@ import io.github.cgglyle.boson.graviton.api.LogControllerService;
 import io.github.cgglyle.boson.graviton.api.LogScheduler;
 import io.github.cgglyle.boson.graviton.api.OrderNoGenerate;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.service.mq.DisruptorQueue;
+import io.github.cgglyle.boson.graviton.service.mq.DisruptorQueueFactory;
+import io.github.cgglyle.boson.graviton.service.mq.LogPrintfConsume;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -56,8 +60,11 @@ public class GravitonLogAspect {
     private final LogControllerService logControllerService;
     private final LogScheduler logScheduler;
     private final GravitonLogSpEL gravitonLogSpEl;
+    private final LogPrintfConsume logPrintfConsume;
     @Autowired
     private ApplicationContext context;
+    private final DisruptorQueue<LogInfo> disruptorQueue = DisruptorQueueFactory.getWorkPoolQueue(16,
+            false, logPrintfConsume);
 
     /**
      * 切入点
@@ -73,14 +80,14 @@ public class GravitonLogAspect {
      */
     @Before(value = "unityLogCut()&&@annotation(gravitonLog)")
     public void unityLog(JoinPoint joinPoint, GravitonLog gravitonLog) {
-        GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
+//        GravitonAsync gravitonAsync = AnnotationUtils.findAnnotation(joinPoint.getSignature().getDeclaringType(), GravitonAsync.class);
         Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         LogInfo logInfo = logInfoStack.peek();
-        if (gravitonAsync != null) {
-            logInfo.setAsync(gravitonAsync.async());
-        } else {
-            logInfo.setAsync(gravitonLog.async());
-        }
+//        if (gravitonAsync != null) {
+//            logInfo.setAsync(gravitonAsync.async());
+//        } else {
+//            logInfo.setAsync(gravitonLog.async());
+//        }
         logControllerService.preprocessing(joinPoint, gravitonLog, logInfo);
     }
 
@@ -89,8 +96,6 @@ public class GravitonLogAspect {
      */
     @Around(value = "unityLogCut()&&@annotation(gravitonLog)")
     public Object doAround(ProceedingJoinPoint proceedingJoinPoint, GravitonLog gravitonLog) throws Throwable {
-        // 判断该线程是否在容器中有栈
-        long id = Thread.currentThread().getId();
         Stack<LogInfo> logInfoStack = THREAD_LOCAL_STACK_LOG_INFO.get();
         // 判断栈中是否有信息，没有信息代表是第一次进入，添加一个OrderNo
         if (logInfoStack.size() == 0) {
@@ -107,8 +112,8 @@ public class GravitonLogAspect {
                 THREAD_LOCAL_ORDER_NO.set(bean.getOrderNo());
             }
         }
-        logInfoStack.push(new LogInfo());
-        LogInfo logInfo = logInfoStack.peek();
+        LogInfo logInfo = new LogInfo();
+        logInfoStack.push(logInfo);
         logInfo.setOrderNo(THREAD_LOCAL_ORDER_NO.get());
         logInfo.setStartTime(LocalDateTime.now());
         return proceedingJoinPoint.proceed();
@@ -143,7 +148,8 @@ public class GravitonLogAspect {
         LogInfo logInfo = logInfoStack.pop();
         logInfo.setEndTime(LocalDateTime.now());
         logInfo.setConsumeTime(Duration.between(logInfo.getStartTime(), logInfo.getEndTime()).toMillis());
-        logScheduler.startPrintf(logInfo);
+//        logScheduler.startPrintf(logInfo);
+        disruptorQueue.publish(logInfo);
         // 如果栈中为空，就移除相关线程的所有信息
         if (logInfoStack.size() == 0) {
             THREAD_LOCAL_ORDER_NO.remove();

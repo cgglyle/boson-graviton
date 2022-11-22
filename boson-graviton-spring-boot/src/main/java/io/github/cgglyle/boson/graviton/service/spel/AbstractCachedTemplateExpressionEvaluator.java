@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.service;
+package io.github.cgglyle.boson.graviton.service.spel;
 
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.context.expression.CachedExpressionEvaluator;
