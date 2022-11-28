@@ -4,7 +4,8 @@ import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Disruptor 工厂
@@ -23,10 +24,11 @@ public class DisruptorQueueFactory {
      * @param <T>            具体事件
      * @return 一个经过配置的消息队列
      */
-    public static <T> DisruptorQueue<T> getWorkPoolQueue(int queueSize, boolean isMoreProducer,
+    public static <T> DisruptorQueue<T> getWorkPoolQueue(ThreadFactory threadFactory, int queueSize,
+                                                         boolean isMoreProducer,
                                                          AbstractLogPrintfConsume<T>... consumers) {
         Disruptor<LogEvent<T>> disruptor = new Disruptor<>(new LogEventFactory<>(), queueSize,
-                Executors.defaultThreadFactory(), isMoreProducer ? ProducerType.MULTI : ProducerType.SINGLE,
+                threadFactory, isMoreProducer ? ProducerType.MULTI : ProducerType.SINGLE,
                 new SleepingWaitStrategy());
         disruptor.handleEventsWithWorkerPool(consumers);
         return new DisruptorQueue<>(disruptor);
@@ -41,10 +43,11 @@ public class DisruptorQueueFactory {
      * @param <T>            具体事件
      * @return 一个经过配置的消息队列
      */
-    public static <T> DisruptorQueue<T> getHandleEventsQueue(int queueSize, boolean isMoreProducer,
-                                                         AbstractLogPrintfConsume<T>... consumers) {
+    public static <T> DisruptorQueue<T> getHandleEventsQueue(ThreadFactory threadFactory, int queueSize,
+                                                             boolean isMoreProducer,
+                                                             AbstractLogPrintfConsume<T>... consumers) {
         Disruptor<LogEvent<T>> disruptor = new Disruptor<>(new LogEventFactory<>(), queueSize,
-                Executors.defaultThreadFactory(), isMoreProducer ? ProducerType.MULTI : ProducerType.SINGLE,
+                threadFactory, isMoreProducer ? ProducerType.MULTI : ProducerType.SINGLE,
                 new SleepingWaitStrategy());
         disruptor.handleEventsWith(consumers);
         return new DisruptorQueue<>(disruptor);

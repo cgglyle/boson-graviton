@@ -18,7 +18,7 @@ package io.github.cgglyle.boson.graviton.service.spel;
 
 import io.github.cgglyle.boson.graviton.api.GravitonLogInfoSpEL;
 import io.github.cgglyle.boson.graviton.api.GravitonLogSpEL;
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,24 +36,24 @@ public class GravitonLogInfoValueParser implements GravitonLogInfoSpEL {
     private final GravitonLogSpEL gravitonLogSpEl;
 
     @Override
-    public CompletableFuture<?> parser(LogInfo loginfo, Class<?> parserResultClass) {
-        if (loginfo.isStatus()) {
-            try {
-                Object parser = gravitonLogSpEl.parser(loginfo.getJoinPoint(),
-                        loginfo.getSuccess().toString(), loginfo.getOutParameter(), null, parserResultClass);
-                loginfo.setBusinessLog(parser);
-            } catch (Exception e) {
-                log.error("SpEL解析出现异常" + e.getMessage(), e);
-            }
-        } else {
-            try {
-                Object parser = gravitonLogSpEl.parser(loginfo.getJoinPoint(),
-                        loginfo.getFailure().toString(), null, loginfo.getErrorMsg(), parserResultClass);
-                loginfo.setBusinessLog(parser);
-            } catch (Exception e) {
-                log.error("SpEL解析出现异常" + e.getMessage(), e);
-            }
-        }
+    public CompletableFuture<?> parser(LogContext loginfo, Class<?> parserResultClass) {
+//        if (loginfo.isStatus()) {
+//            try {
+//                Object parser = gravitonLogSpEl.parser(loginfo.getJoinPoint(),
+//                        loginfo.getSuccess().toString(), loginfo.getOutParameter(), null, parserResultClass);
+//                loginfo.setBusinessLog(parser);
+//            } catch (Exception e) {
+//                log.error("SpEL解析出现异常" + e.getMessage(), e);
+//            }
+//        } else {
+//            try {
+//                Object parser = gravitonLogSpEl.parser(loginfo.getJoinPoint(),
+//                        loginfo.getFailure().toString(), null, loginfo.getErrorMsg(), parserResultClass);
+//                loginfo.setBusinessLog(parser);
+//            } catch (Exception e) {
+//                log.error("SpEL解析出现异常" + e.getMessage(), e);
+//            }
+//        }
         return CompletableFuture.completedFuture(null);
     }
 }

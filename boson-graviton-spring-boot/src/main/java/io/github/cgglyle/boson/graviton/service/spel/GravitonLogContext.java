@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.service;
+package io.github.cgglyle.boson.graviton.service.spel;
 
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -68,7 +68,7 @@ public final class GravitonLogContext {
      *
      * @param value LogInfo对象
      */
-    public static void putVariable(LogInfo value) {
+    public static void putVariable(LogContext value) {
         Field[] fields;
         if (FIELD_CACHE.containsKey(value.getClass().getName())) {
             fields = FIELD_CACHE.get(value.getClass().getName());
@@ -92,7 +92,7 @@ public final class GravitonLogContext {
     /**
      * 存入一条数据，会将变量存入GravitonSpEL上下文变量中
      * <p>
-     * 注意！请不要使用{@link io.github.cgglyle.boson.graviton.model.LogInfo}中存在的成员变量名，否则会在解析过程中被日志信息覆盖！
+     * 注意！请不要使用{@link LogContext}中存在的成员变量名，否则会在解析过程中被日志信息覆盖！
      *
      * @param key   变量名
      * @param value 数据

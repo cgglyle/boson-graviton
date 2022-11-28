@@ -17,7 +17,7 @@
 package io.github.cgglyle.boson.graviton.test.autoconfigure.service;
 
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
-import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
+import io.github.cgglyle.boson.graviton.service.spel.GravitonLogContext;
 import org.springframework.stereotype.Service;
 
 /**

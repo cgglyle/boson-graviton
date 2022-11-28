@@ -19,7 +19,7 @@ package io.github.cgglyle.boson.graviton.test.controller;
 import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
 import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
-import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
+import io.github.cgglyle.boson.graviton.service.spel.GravitonLogContext;
 import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
 import io.github.cgglyle.boson.graviton.test.service.TestService;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +37,9 @@ public class TestController {
 
     private final TestService service;
 
-    @GravitonLog(success = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
-            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}",
+    @GravitonLog(businessSuccessTemplate = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            businessFailureTemplate = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}",
+            orderNo = "#{#str}",
             systemSuccessLogLevel = LogLevelEnum.WARN)
     @ResponseBody
     @GetMapping("test/{str}")
@@ -52,8 +53,8 @@ public class TestController {
         return service.testString(str) + " controller test";
     }
 
-    @GravitonLog(success = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
-            failure = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+    @GravitonLog(businessSuccessTemplate = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
+            businessFailureTemplate = "Controoler 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
     @ResponseBody
     @GetMapping("test/obj/{str}")
     public TestEntity testObj(@PathVariable String str) {

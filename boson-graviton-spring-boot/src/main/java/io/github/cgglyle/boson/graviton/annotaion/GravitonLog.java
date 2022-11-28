@@ -18,7 +18,7 @@ package io.github.cgglyle.boson.graviton.annotaion;
 
 
 import io.github.cgglyle.boson.graviton.api.OrderNoGenerate;
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import io.github.cgglyle.boson.graviton.service.UUIDOrderNo;
 import org.springframework.core.annotation.AliasFor;
@@ -51,23 +51,18 @@ public @interface GravitonLog {
      * <p>
      * 不填写此项将默认使用内置的日志模板
      * <p>
-     * 可以在{@link LogInfo}中找到支持的标签。 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
+     * 可以在{@link LogContext}中找到支持的标签。 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
      */
-    String successTemplate() default "";
+    String systemSuccessTemplate() default "";
 
     /**
      * 失败模板
      * <p>
      * 不填写此项将默认使用内置的日志模板
      * <p>
-     * 可以在{@link LogInfo}中找到支持的标签。 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
+     * 可以在{@link LogContext}中找到支持的标签。 可以使用{@code {{time}}}实现对标签的引用（“{{xxx}}”外围的"{{"和"}}"是必须的）， 你也可以继承{@code LogInfo}来添加标签
      */
-    String failureTemplate() default "";
-
-    /**
-     * 是否开启异步
-     */
-    boolean async() default true;
+    String systemFailureTemplate() default "";
 
     /**
      * 日期格式
@@ -83,14 +78,14 @@ public @interface GravitonLog {
      * #{#result}")}
      */
     @AliasFor("value")
-    String success() default "";
+    String businessSuccessTemplate() default "";
 
     /**
      * 业务日志
      * <p>
      * 支持SpEL
      */
-    @AliasFor("success")
+    @AliasFor("businessSuccessTemplate")
     String value() default "";
 
     /**
@@ -100,7 +95,7 @@ public @interface GravitonLog {
      * <p>
      * {@code @GravitonLog(failure = "Service 操作人 #{#userName} 将 #{#testContext} 变更为 #{#str} 操作失败")
      */
-    String failure() default "";
+    String businessFailureTemplate() default "";
 
     /**
      * 是否开启系统日志
@@ -154,7 +149,7 @@ public @interface GravitonLog {
     /**
      * 系统日志失败打印级别
      */
-    LogLevelEnum systemErrorLogLevel() default LogLevelEnum.ERROR;
+    LogLevelEnum systemFailureLogLevel() default LogLevelEnum.ERROR;
 
     /**
      * 系统日志成功打印级别
@@ -164,7 +159,7 @@ public @interface GravitonLog {
     /**
      * 业务日志失败打印级别
      */
-    LogLevelEnum businessErrorLogLevel() default LogLevelEnum.WARN;
+    LogLevelEnum businessFailureLogLevel() default LogLevelEnum.WARN;
 
     /**
      * 业务日志成功打印级别

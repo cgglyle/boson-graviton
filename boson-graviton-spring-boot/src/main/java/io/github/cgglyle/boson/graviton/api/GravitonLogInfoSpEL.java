@@ -16,7 +16,7 @@
 
 package io.github.cgglyle.boson.graviton.api;
 
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.concurrent.CompletableFuture;
@@ -27,5 +27,5 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface GravitonLogInfoSpEL {
     @Async("gravitonLogPool")
-    CompletableFuture<?> parser(LogInfo loginfo, Class<?> parserResultClass);
+    CompletableFuture<?> parser(LogContext loginfo, Class<?> parserResultClass);
 }

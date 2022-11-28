@@ -1,4 +1,4 @@
-package io.github.cgglyle.boson.graviton.service.mq;
+package io.github.cgglyle.boson.graviton.service.printf;
 
 import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import lombok.extern.slf4j.Slf4j;

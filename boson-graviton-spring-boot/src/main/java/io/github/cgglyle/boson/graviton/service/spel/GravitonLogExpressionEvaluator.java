@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.service;
+package io.github.cgglyle.boson.graviton.service.spel;
 
 import io.github.cgglyle.boson.graviton.service.spel.AbstractCachedTemplateExpressionEvaluator;
 import io.github.cgglyle.boson.graviton.service.spel.GravitonLogEvaluationContext;

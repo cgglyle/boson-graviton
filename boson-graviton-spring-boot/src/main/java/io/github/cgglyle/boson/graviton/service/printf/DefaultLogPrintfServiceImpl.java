@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.test.autoconfigure.service;
+package io.github.cgglyle.boson.graviton.service.printf;
 
 import io.github.cgglyle.boson.graviton.api.LogPrintfService;
 import io.github.cgglyle.boson.graviton.model.LogContext;
-import io.github.cgglyle.boson.graviton.service.printf.TemplateInterpreter;
+import io.github.cgglyle.boson.graviton.model.LogLevelEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.util.StringUtils;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
+ * 默认日志打印服务
+ *
  * @author lyle
  * @since 2022/09/10
  */
 @Slf4j
-@EnableAsync
-//@Service
 @RequiredArgsConstructor
-public class DefaultLogPrintfService implements LogPrintfService {
+public class DefaultLogPrintfServiceImpl implements LogPrintfService {
     private final TemplateInterpreter templateInterpreter;
 
     /**
@@ -41,25 +45,29 @@ public class DefaultLogPrintfService implements LogPrintfService {
      */
     @Override
     public void log(LogContext logContext) {
-        if (logContext.isStatus()) {
-            log.info(templateInterpreter.interpreter(logContext));
-        } else {
-            log.error(templateInterpreter.interpreter(logContext));
-        }
+        printf(logContext);
+    }
+@Async
+    private void printf(LogContext logContext) {
+
     }
 
-    /**
-     * 异步日志打印服务
-     *
-     * @param logContext 日志信息
-     */
-    @Override
-    public void asyncLog(LogContext logContext) {
-        if (logContext.isStatus()) {
-            log.info(templateInterpreter.interpreter(logContext));
-        } else {
-            log.error(templateInterpreter.interpreter(logContext));
+    private void printf(LogLevelEnum logLevelEnum, String str) {
+        if (logLevelEnum == LogLevelEnum.INFO) {
+            log.info(str);
+            return;
         }
-
+        if (logLevelEnum == LogLevelEnum.WARN) {
+            log.warn(str);
+            return;
+        }
+        if (logLevelEnum == LogLevelEnum.ERROR) {
+            log.error(str);
+            return;
+        }
+        if (logLevelEnum == LogLevelEnum.DEBUG) {
+            log.debug(str);
+            return;
+        }
     }
 }

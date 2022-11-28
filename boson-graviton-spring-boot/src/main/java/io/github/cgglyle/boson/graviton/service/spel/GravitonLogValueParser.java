@@ -17,7 +17,6 @@
 package io.github.cgglyle.boson.graviton.service.spel;
 
 import io.github.cgglyle.boson.graviton.api.GravitonLogSpEL;
-import io.github.cgglyle.boson.graviton.service.GravitonLogExpressionEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.aspectj.lang.JoinPoint;

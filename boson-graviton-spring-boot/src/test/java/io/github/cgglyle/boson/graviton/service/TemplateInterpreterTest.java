@@ -17,7 +17,8 @@
 package io.github.cgglyle.boson.graviton.service;
 
 import io.github.cgglyle.boson.graviton.exception.LogException;
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
+import io.github.cgglyle.boson.graviton.service.printf.TemplateInterpreter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +39,7 @@ class TemplateInterpreterTest {
             "[URL]=[{{url}}] [URI]=[{{uri}}] " +
             "[类名]=[{{className}}] [入参]=[{{inParameter}}] [异常]=[{{exception}}]";
     private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-    private final LogInfo info = new LogInfo();
+    private final LogContext info = new LogContext();
     private TemplateInterpreter templateInterpreterUnderTest;
 
     @BeforeEach

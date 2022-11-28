@@ -18,7 +18,7 @@ package io.github.cgglyle.boson.graviton.test.service;
 
 import io.github.cgglyle.boson.graviton.annotaion.EnableGravitonOrderNo;
 import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
-import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
+import io.github.cgglyle.boson.graviton.service.spel.GravitonLogContext;
 import io.github.cgglyle.boson.graviton.test.entity.TestEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +31,8 @@ import org.springframework.stereotype.Service;
 public class TestServiceImpl implements TestService {
 
     @Override
-    @GravitonLog(success = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
-            failure = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+    @GravitonLog(businessSuccessTemplate = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result}",
+            businessFailureTemplate = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
     public String testString(String str) {
         GravitonLogContext.createLogContext();
         GravitonLogContext.putVariable("testContext", str + "OK!");
@@ -44,8 +44,8 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    @GravitonLog(success = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
-            failure = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
+    @GravitonLog(businessSuccessTemplate = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} #{#root.methodName}, #{#result.username}",
+            businessFailureTemplate = "Service 操作人 #{#username} 将 #{#testContext} 变更为 #{#str} 操作失败, 失败原因#{#errorMsg}")
     public TestEntity testObj(TestEntity entity) {
         GravitonLogContext.createLogContext();
         GravitonLogContext.putVariable("testContext", "testObjService OK!");

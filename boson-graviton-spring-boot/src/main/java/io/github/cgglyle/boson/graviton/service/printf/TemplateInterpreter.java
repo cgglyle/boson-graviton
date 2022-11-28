@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.service;
+package io.github.cgglyle.boson.graviton.service.printf;
 
 import io.github.cgglyle.boson.graviton.exception.LogException;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogTemplate;
 import io.github.cgglyle.boson.graviton.model.Template;
+import io.github.cgglyle.boson.graviton.service.logger.Logger;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -67,19 +70,20 @@ public class TemplateInterpreter {
     /**
      * 日志信息携带模板进入后会进行模板解释，将信息附着到模板上。
      *
-     * @param info 日志信息
+     * @param logContext 日志信息上下文
      * @return 已经解析完成的可以直接打印的日志
      */
-    public String interpreter(LogInfo info) {
+    public String interpreter(LogContext logContext) {
         String template;
+        LogTemplate systemLogTemplate = logContext.getSystemLogTemplate();
         // 无模板时，使用默认模板
-        if (info.isStatus()) {
-            template = info.getSuccessTemplate();
+        if (logContext.isStatus()) {
+            template = systemLogTemplate.getSuccessTemplate();
             if (!StringUtils.hasText(template)) {
                 template = defaultSuccessTemplate;
             }
         } else {
-            template = info.getFailureTemplate();
+            template = systemLogTemplate.getFailureTemplate();
             if (!StringUtils.hasText(template)) {
                 template = defaultFailureTemplate;
             }
@@ -89,8 +93,10 @@ public class TemplateInterpreter {
         Pattern compile = Pattern.compile(TYPE);
         Matcher matcher = compile.matcher(template);
         while (matcher.find()) {
-            templates.add(Temp.builder().template(matcher.group()).startIndex(matcher.start()).endIndex(matcher.end()).build());
+            templates.add(Temp.builder().template(matcher.group()).startIndex(matcher.start())
+                    .endIndex(matcher.end()).build());
         }
+        LogInfo info = logContext.getLogInfo();
         Class<? extends LogInfo> aClass = info.getClass();
         String tempStr = template;
         // 标识存入数据
@@ -110,8 +116,8 @@ public class TemplateInterpreter {
                 }
                 if (o instanceof LocalDateTime) {
                     String format;
-                    if (StringUtils.hasText(info.getTimeFormat())) {
-                        format = ((LocalDateTime) o).format(DateTimeFormatter.ofPattern(info.getTimeFormat()));
+                    if (StringUtils.hasText(systemLogTemplate.getTimeFormat())) {
+                        format = ((LocalDateTime) o).format(DateTimeFormatter.ofPattern(systemLogTemplate.getTimeFormat()));
                     } else {
                         format = ((LocalDateTime) o).format(DateTimeFormatter.ofPattern(timeFormat));
                     }

@@ -19,11 +19,12 @@ package io.github.cgglyle.boson.graviton.test.config;
 import io.github.cgglyle.boson.graviton.aop.GravitonLogAspect;
 import io.github.cgglyle.boson.graviton.api.*;
 import io.github.cgglyle.boson.graviton.model.Template;
-import io.github.cgglyle.boson.graviton.service.DefaultLogPrintfServiceImpl;
-import io.github.cgglyle.boson.graviton.service.DefaultLogSchedulerImpl;
-import io.github.cgglyle.boson.graviton.service.DefaultWebLogControllerServiceImpl;
-import io.github.cgglyle.boson.graviton.service.TemplateInterpreter;
-import io.github.cgglyle.boson.graviton.service.mq.LogPrintfConsume;
+import io.github.cgglyle.boson.graviton.service.printf.DefaultLogPrintfServiceImpl;
+import io.github.cgglyle.boson.graviton.service.printf.DefaultLogSchedulerImpl;
+import io.github.cgglyle.boson.graviton.service.logger.WebLogger;
+import io.github.cgglyle.boson.graviton.service.printf.TemplateInterpreter;
+import io.github.cgglyle.boson.graviton.service.printf.SystemLogPrintfConsume;
+import io.github.cgglyle.boson.graviton.service.printf.BusinessLogPrintfConsume;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
@@ -37,12 +38,13 @@ public class GravitonConfig {
     @Bean
     GravitonLogAspect gravitonLogAspect(LogControllerService logControllerService, LogScheduler logScheduler,
                                         GravitonLogSpEL gravitonLogSpEL, TemplateInterpreter templateInterpreter) {
-        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL, new LogPrintfConsume(templateInterpreter));
+        return new GravitonLogAspect(logControllerService, logScheduler, gravitonLogSpEL,
+                new SystemLogPrintfConsume(templateInterpreter), new BusinessLogPrintfConsume(gravitonLogSpEL));
     }
 
     @Bean
     LogControllerService logControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
-        return new DefaultWebLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
+        return new WebLogger(logUserService, gravitonLogInfoSpEL);
     }
 
     @Bean

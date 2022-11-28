@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.service;
+package io.github.cgglyle.boson.graviton.service.printf;
 
 import io.github.cgglyle.boson.graviton.api.LogPrintfService;
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
+import io.github.cgglyle.boson.graviton.service.AbstractLogScheduler;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,13 +63,9 @@ public class DefaultLogSchedulerImpl extends AbstractLogScheduler {
     }
 
     @Override
-    public void startPrintf(LogInfo info) {
+    public void startPrintf(LogContext info) {
         for (LogPrintfService logPrintfService : LOG_PRINTF_SERVICE_LIST) {
-            if (info.isAsync()) {
-                logPrintfService.asyncLog(info);
-            } else {
-                logPrintfService.log(info);
-            }
+            logPrintfService.log(info);
         }
     }
 

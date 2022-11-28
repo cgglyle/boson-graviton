@@ -16,7 +16,6 @@
 
 package io.github.cgglyle.boson.graviton.service.spel;
 
-import io.github.cgglyle.boson.graviton.service.GravitonLogContext;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.ParameterNameDiscoverer;
 

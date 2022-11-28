@@ -16,7 +16,7 @@
 
 package io.github.cgglyle.boson.graviton.api;
 
-import io.github.cgglyle.boson.graviton.model.LogInfo;
+import io.github.cgglyle.boson.graviton.model.LogContext;
 
 import java.util.List;
 
@@ -40,6 +40,6 @@ public interface LogScheduler {
      *
      * @param info 日志信息
      */
-    void startPrintf(LogInfo info);
+    void startPrintf(LogContext info);
 
 }

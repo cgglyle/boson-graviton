@@ -19,7 +19,11 @@ package io.github.cgglyle.boson.graviton.autoconfigure;
 import io.github.cgglyle.boson.graviton.aop.GravitonLogAspect;
 import io.github.cgglyle.boson.graviton.api.*;
 import io.github.cgglyle.boson.graviton.model.Template;
-import io.github.cgglyle.boson.graviton.service.*;
+import io.github.cgglyle.boson.graviton.service.logger.NoWebLogger;
+import io.github.cgglyle.boson.graviton.service.logger.WebLogger;
+import io.github.cgglyle.boson.graviton.service.printf.DefaultLogPrintfServiceImpl;
+import io.github.cgglyle.boson.graviton.service.printf.DefaultLogSchedulerImpl;
+import io.github.cgglyle.boson.graviton.service.printf.TemplateInterpreter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -97,7 +101,7 @@ public class GravitonAutoconfigure {
     @ConditionalOnNotWebApplication
     @Bean
     LogControllerService logControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
-        return new DefaultLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
+        return new NoWebLogger(logUserService, gravitonLogInfoSpEL);
     }
 
     /**
@@ -107,7 +111,7 @@ public class GravitonAutoconfigure {
     @ConditionalOnWebApplication
     @Bean
     LogControllerService webLogControllerService(@Nullable LogUserService logUserService, GravitonLogInfoSpEL gravitonLogInfoSpEL) {
-        return new DefaultWebLogControllerServiceImpl(logUserService, gravitonLogInfoSpEL);
+        return new WebLogger(logUserService, gravitonLogInfoSpEL);
     }
 
     /**

@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.cgglyle.boson.graviton.api;
+package io.github.cgglyle.boson.graviton.service.logger;
 
+import io.github.cgglyle.boson.graviton.annotaion.GravitonLog;
+import io.github.cgglyle.boson.graviton.api.GravitonLogInfoSpEL;
+import io.github.cgglyle.boson.graviton.api.LogUserService;
 import io.github.cgglyle.boson.graviton.model.LogContext;
-import org.springframework.scheduling.annotation.Async;
+import org.aspectj.lang.JoinPoint;
 
 /**
- * 日志打印服务
- * <p>
- * 接口提供自动打印服务
+ * 默认提供的日志处理服务
  *
  * @author lyle
  * @since 2022/09/10
  */
-public interface LogPrintfService {
-    /**
-     * 日志打印服务
-     *
-     * @param logContext 日志信息
-     */
-    void log(LogContext logContext);
+public class NoWebLogger extends Logger {
+
+    public NoWebLogger(LogUserService logUserService, GravitonLogInfoSpEL logInfoSpEL) {
+        super(logUserService, logInfoSpEL);
+    }
 }
