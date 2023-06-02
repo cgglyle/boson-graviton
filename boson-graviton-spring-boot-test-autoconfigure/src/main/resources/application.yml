@@ -1,5 +1,0 @@
-debug: true
-spring:
-  boson:
-    graviton:
-      core-pool-size: 15
